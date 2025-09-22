@@ -403,10 +403,28 @@
     endfor
   endif
   
-  # Get the first menu item URL for logo link
-  assign first_menu_item_url = menu_home_url
+  # Get the logo URL - prioritize "Home" menu item, then first menu item
+  assign logo_url = routes.root_url
   if current_menu != blank and current_menu.links.size > 0
-    assign first_menu_item_url = current_menu.links.first.url
+    # First, try to find a "Home" menu item
+    for link in current_menu.links
+      if link.title contains 'Home' or link.title contains 'home'
+        assign logo_url = link.url
+        break
+      endif
+    endfor
+    
+    # If no "Home" found, use the first menu item
+    unless logo_url != routes.root_url
+      assign logo_url = current_menu.links.first.url
+    endunless
+  endif
+  
+  # Debug output
+  echo '<!-- Logo URL Debug: current_menu = ' | append: current_menu.handle | append: ' -->'
+  echo '<!-- Logo URL Debug: logo_url = ' | append: logo_url | append: ' -->'
+  if current_menu != blank
+    echo '<!-- Logo URL Debug: first menu item = ' | append: current_menu.links.first.title | append: ' -> ' | append: current_menu.links.first.url | append: ' -->'
   endif
 -%}
 
@@ -438,7 +456,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ section.settings.logo_link | default: first_menu_item_url }}" class="header__heading-link link link--text focus-inset">
+          <a href="{{ section.settings.logo_link | default: logo_url }}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
@@ -478,7 +496,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ section.settings.logo_link | default: first_menu_item_url }}" class="header__heading-link link link--text focus-inset">
+          <a href="{{ section.settings.logo_link | default: logo_url }}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
