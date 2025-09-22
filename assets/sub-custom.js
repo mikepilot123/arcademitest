@@ -214,7 +214,19 @@ console.log(sell_name);
    $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .image").append("<div class='img'><img src="+img+"></div>");
 
    $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .titlesec").append("<div class='title'><a href='"+producturl+"'>" +title+ "</a></div>");
-   $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox").append("<div data-price='"+price+"' class='price'>"+curr+price+ " Ex. VAT</div>");
+   // Check if product has retail tag by extracting handle from URL
+   const productHandle = items[i]['url'].replace('/products/', '').split('?')[0];
+   fetch('/products/' + productHandle + '.js')
+     .then(response => response.json())
+     .then(productData => {
+       const isRetail = productData.tags && productData.tags.includes('retail');
+       const vatText = isRetail ? '' : ' Ex. VAT';
+       $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox").append("<div data-price='"+price+"' class='price'>"+curr+price+ vatText+"</div>");
+     })
+     .catch(() => {
+       // Fallback: assume non-retail if fetch fails
+       $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox").append("<div data-price='"+price+"' class='price'>"+curr+price+ " Ex. VAT</div>");
+     });
 
        
         var variant_names = items[i]['options_with_values'];

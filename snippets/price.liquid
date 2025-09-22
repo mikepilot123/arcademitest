@@ -80,7 +80,7 @@
       {%- else -%}
         <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
         <span class="ss price-item price-item--regular clr_drk_navy f-14 f-600">
-         {% if collection.handle == "flashcards" %}From {% endif %}{{ money_price }} Ex. VAT
+         {% if collection.handle == "flashcards" %}From {% endif %}{{ money_price }}{% if product.tags contains 'retail' == false %} Ex. VAT{% endif %}
         </span>
       {%- endif -%}
     </div>
@@ -99,7 +99,7 @@
       {%- endunless -%}
       <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.sale_price' | t }}</span>
       <span class="price-item price-item--sale price-item--last clr_drk_navy f-14 f-600">
-       {% if collection.handle == "flashcards" %}From {% endif %}{{ money_price }} Ex. VAT
+       {% if collection.handle == "flashcards" %}From {% endif %}{{ money_price }}{% if product.tags contains 'retail' == false %} Ex. VAT{% endif %}
       </span>
     </div>
     <small class="unit-price caption{% if product.selected_or_first_available_variant.unit_price_measurement == nil %} hidden{% endif %}">
