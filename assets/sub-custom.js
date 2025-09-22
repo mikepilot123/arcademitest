@@ -717,141 +717,179 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
 function clearRetailProductsFromCart() {
   console.log('Clearing retail products from cart...');
   
-  // Get all current cart items displayed
-  var $retailItems = [];
-  $('.content-block .part').each(function() {
-    var $part = $(this);
-    var key = $part.attr('key');
-    
-    // Check if this item is retail
-    // Retail items will NOT have "Ex. VAT" in their price text
-    var $priceDiv = $part.find('.price');
-    var priceText = $priceDiv.text();
-    
-    // Retail items will NOT have "Ex. VAT" in their price text
-    if (priceText && !priceText.includes('Ex. VAT')) {
-      $retailItems.push({
-        element: $part,
-        key: key
+  // First, get current cart from server to check actual product properties
+  $.ajax({
+    url: '/cart.js',
+    type: 'GET',
+    dataType: 'JSON',
+    success: function(cartData) {
+      if (!cartData.items || cartData.items.length === 0) {
+        console.log('Cart is empty, nothing to clear');
+        return;
+      }
+      
+      var itemsToRemove = [];
+      var $retailItems = [];
+      
+      // Check each item in server cart data
+      cartData.items.forEach(function(item) {
+        var itemIsRetail = (item.properties && item.properties['is_retail'] === 'true');
+        
+        if (itemIsRetail) {
+          itemsToRemove.push(item.key);
+          
+          // Find corresponding DOM element
+          $('.content-block .part').each(function() {
+            var $part = $(this);
+            var partKey = $part.attr('key');
+            if (partKey === item.key) {
+              $retailItems.push({
+                element: $part,
+                key: item.key,
+                title: item.product_title
+              });
+            }
+          });
+        }
       });
+  
+      if ($retailItems.length > 0) {
+        console.log('Found', $retailItems.length, 'retail items to remove:', $retailItems.map(i => i.title));
+        
+        // OPTIMISTIC UI UPDATE: Remove retail items immediately
+        $retailItems.forEach(function(item) {
+          item.element.fadeOut(200, function() {
+            $(this).remove();
+          });
+        });
+        
+        // Update cart count immediately (optimistic)
+        var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
+        var newCount = Math.max(0, currentCount - $retailItems.length);
+        $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
+        $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
+        
+        // Always show cart count
+        $(".cart-count-bubble").show();
+        
+        // SERVER SYNC: Remove items from server cart
+        var updates = {};
+        itemsToRemove.forEach(function(key) {
+          updates[key] = 0;
+        });
+        
+        // Send removal request to server
+        fetch(window.Shopify.routes.root + 'cart/update.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ updates })
+        })
+        .then(response => {
+          console.log('Server confirmed removal of retail products');
+        })
+        .catch((error) => {
+          console.error('Failed to remove retail products from server:', error);
+        });
+      } else {
+        console.log('No retail products found in cart');
+      }
+    },
+    error: function() {
+      console.log('Error checking cart for retail products');
     }
   });
-  
-  if ($retailItems.length > 0) {
-    console.log('Found', $retailItems.length, 'retail items to remove');
-    
-    // OPTIMISTIC UI UPDATE: Remove retail items immediately
-    $retailItems.forEach(function(item) {
-      item.element.fadeOut(200, function() {
-        $(this).remove();
-      });
-    });
-    
-    // Update cart count immediately (optimistic)
-    var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
-    var newCount = Math.max(0, currentCount - $retailItems.length);
-    $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
-    $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
-    
-    // Always show cart count
-    $(".cart-count-bubble").show();
-    
-    // SERVER SYNC: Remove items from server cart
-    var updates = {};
-    $retailItems.forEach(function(item) {
-      if (item.key) {
-        updates[item.key] = 0;
-      }
-    });
-    
-    // Send removal request to server
-    fetch(window.Shopify.routes.root + 'cart/update.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ updates })
-    })
-    .then(response => {
-      console.log('Server confirmed removal of retail products');
-    })
-    .catch((error) => {
-      console.error('Failed to remove retail products from server:', error);
-    });
-  } else {
-    console.log('No retail products found in cart');
-  }
 }
 
 // Helper function to clear non-retail products from cart (optimistic + server sync)
 function clearNonRetailProductsFromCart() {
   console.log('Clearing non-retail products from cart...');
   
-  // Get all current cart items displayed
-  var $nonRetailItems = [];
-  $('.content-block .part').each(function() {
-    var $part = $(this);
-    var key = $part.attr('key');
-    
-    // Check if this item has the retail property
-    // Since we're adding a retail item, any existing item without is_retail=true should be removed
-    // We'll identify non-retail items as those without the retail marker in their display
-    var $priceDiv = $part.find('.price');
-    var priceText = $priceDiv.text();
-    
-    // Non-retail items will have "Ex. VAT" in their price text
-    if (priceText && priceText.includes('Ex. VAT')) {
-      $nonRetailItems.push({
-        element: $part,
-        key: key
+  // First, get current cart from server to check actual product properties
+  $.ajax({
+    url: '/cart.js',
+    type: 'GET',
+    dataType: 'JSON',
+    success: function(cartData) {
+      if (!cartData.items || cartData.items.length === 0) {
+        console.log('Cart is empty, nothing to clear');
+        return;
+      }
+      
+      var itemsToRemove = [];
+      var $nonRetailItems = [];
+      
+      // Check each item in server cart data
+      cartData.items.forEach(function(item) {
+        var itemIsRetail = (item.properties && item.properties['is_retail'] === 'true');
+        
+        // If item is NOT retail, it should be removed
+        if (!itemIsRetail) {
+          itemsToRemove.push(item.key);
+          
+          // Find corresponding DOM element
+          $('.content-block .part').each(function() {
+            var $part = $(this);
+            var partKey = $part.attr('key');
+            if (partKey === item.key) {
+              $nonRetailItems.push({
+                element: $part,
+                key: item.key,
+                title: item.product_title
+              });
+            }
+          });
+        }
       });
+  
+      if ($nonRetailItems.length > 0) {
+        console.log('Found', $nonRetailItems.length, 'non-retail items to remove:', $nonRetailItems.map(i => i.title));
+        
+        // OPTIMISTIC UI UPDATE: Remove non-retail items immediately
+        $nonRetailItems.forEach(function(item) {
+          item.element.fadeOut(200, function() {
+            $(this).remove();
+          });
+        });
+        
+        // Update cart count immediately (optimistic)
+        var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
+        var newCount = Math.max(0, currentCount - $nonRetailItems.length);
+        $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
+        $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
+        
+        // Always show cart count
+        $(".cart-count-bubble").show();
+        
+        // SERVER SYNC: Remove items from server cart
+        var updates = {};
+        itemsToRemove.forEach(function(key) {
+          updates[key] = 0;
+        });
+        
+        // Send removal request to server
+        fetch(window.Shopify.routes.root + 'cart/update.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ updates })
+        })
+        .then(response => {
+          console.log('Server confirmed removal of non-retail products');
+        })
+        .catch((error) => {
+          console.error('Failed to remove non-retail products from server:', error);
+        });
+      } else {
+        console.log('No non-retail products found in cart');
+      }
+    },
+    error: function() {
+      console.log('Error checking cart for non-retail products');
     }
   });
-  
-  if ($nonRetailItems.length > 0) {
-    console.log('Found', $nonRetailItems.length, 'non-retail items to remove');
-    
-    // OPTIMISTIC UI UPDATE: Remove non-retail items immediately
-    $nonRetailItems.forEach(function(item) {
-      item.element.fadeOut(200, function() {
-        $(this).remove();
-      });
-    });
-    
-    // Update cart count immediately (optimistic)
-    var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
-    var newCount = Math.max(0, currentCount - $nonRetailItems.length);
-    $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
-    $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
-    
-    // Always show cart count
-    $(".cart-count-bubble").show();
-    
-    // SERVER SYNC: Remove items from server cart
-    var updates = {};
-    $nonRetailItems.forEach(function(item) {
-      if (item.key) {
-        updates[item.key] = 0;
-      }
-    });
-    
-    // Send removal request to server
-    fetch(window.Shopify.routes.root + 'cart/update.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ updates })
-    })
-    .then(response => {
-      console.log('Server confirmed removal of non-retail products');
-    })
-    .catch((error) => {
-      console.error('Failed to remove non-retail products from server:', error);
-    });
-  } else {
-    console.log('No non-retail products found in cart');
-  }
 }
 
 $(document).on("click", "button.add_cartretail", function() {
