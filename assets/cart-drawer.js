@@ -24,13 +24,6 @@ class CartDrawer extends HTMLElement {
   }
 
   open(triggeredBy) {
-    // Check if this is a retail product and custom cart drawer should be used instead
-    const isRetailProduct = document.querySelector('.retail-product, .retail-products');
-    if (isRetailProduct && document.body.classList.contains('js-drawer-open-right')) {
-      // Custom cart drawer is already open, don't open standard drawer
-      return;
-    }
-    
     if (triggeredBy) this.setActiveElement(triggeredBy);
     const cartDrawerNote = this.querySelector('[id^="Details-"] summary');
     if (cartDrawerNote && !cartDrawerNote.hasAttribute('role')) this.setSummaryAccessibility(cartDrawerNote);
