@@ -638,17 +638,24 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
 
 
 $(document).on("click", "button.add_cartretail", function() {
-  // For Shopify AJAX API, use flat id/quantity/properties, not items[0][id]
+  // For retail products, use standard Shopify variant ID from product form
   console.log("Clicking Michael");
   $('body').addClass("js-drawer-open-right");
   var qty = 1;
-  var var_id = $('.main_sub_pr').attr('custom_id');
-  var new_tax = $('.main_sub_pr').attr('meta_tax'); 
-  var new_id = $('.main_sub_pr').attr('new_id'); 
-
+  
+  // Get variant ID from standard Shopify product form
+  var var_id = $('.product-variant-id').val();
+  
+  // For retail products, we can get product ID from data attributes or page context
+  var product_id = $('product-info').attr('data-product-id') || '';
+  
+  // Debug logging
+  console.log("Retail add to cart - Variant ID:", var_id, "Product ID:", product_id);
+  
   // Defensive: check for required values
   if (!var_id) {
-    console.error("No variant ID found for add_cartretail");
+    console.error("No variant ID found for add_cartretail - looking for .product-variant-id input");
+    console.log("Available inputs:", $('.product-variant-id').length);
     return;
   }
 
@@ -658,8 +665,11 @@ $(document).on("click", "button.add_cartretail", function() {
     quantity: qty,
     properties: {}
   };
-  if (new_id) data.properties["ID"] = new_id;
-  if (new_tax) data.properties["Tax"] = new_tax;
+  
+  // Add product ID to properties if available
+  if (product_id) {
+    data.properties["ID"] = product_id;
+  }
 
   
 
