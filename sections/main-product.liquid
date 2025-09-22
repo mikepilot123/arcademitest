@@ -174,6 +174,10 @@
                      {% assign customproduct = product.metafields.custom.add_product_custom.value %}  
                   
                         {% if product.metafields.custom.add_product_custom.value != blank %}+ {{ customproduct.price | money }} {% endif %}
+
+                  {%if product.%}      
+
+
                   </span>
                       Ex. VAT
                   </div>

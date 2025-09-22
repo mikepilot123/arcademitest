@@ -28,7 +28,7 @@
       {%- endcapture -%}
 
 {% comment %} Custom button - show only for NON-retail products {% endcomment %}
-{% unless is_retail %}
+
 <button class="add_cart button" click="{{ product-list-carousel }}" {% if current_tag == 'coming-soon' or product.selected_or_first_available_variant.available == false or quantity_rule_soldout or product.selected_or_first_available_variant == nil %}disabled{% endif %}>
   <span>
     {% if current_tag == 'coming-soon' %}
@@ -44,7 +44,7 @@
     {% endif %}
             </span>
 </button>
-{% endunless %}
+{% comment %}{% unless is_retail %} {% endunless %} {% endcomment %}
 
 {% comment %} Default Shopify button - show only for RETAIL products 
 {% if is_retail %}
