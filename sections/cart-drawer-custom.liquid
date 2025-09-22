@@ -102,17 +102,24 @@
     
       <!-- Cart Drawer CheckOut Button Start -->
      <div class="check_btn_bottom">
-    {% if customer %}
+    {% comment %}
+      Show checkout button if:
+      - Customer is logged in
+      OR
+      - Cart contains only retail products (bypass login)
+    {% endcomment %}
+    {% if customer or cart_is_retail_only %}
     <div class="shipping" style="display:none;">
       <div class="btn_wrap check">
        <a class="cartbuttonnew" href="/checkout">CheckOut</a>
       </div>
    </div>
-      {% else %}    
+    {% endif %}
+    {% unless customer or cart_is_retail_only %}    
       <div class="btn_wrap_login">
        <span class="cartbuttonnew">CheckOut</span>
       </div> 
-      {% endif %}
+    {% endunless %}
        <div class="btn_shop">
        <a class="btn" href="/collections">Continue Shop</a>
       </div> 
@@ -665,6 +672,7 @@ input::-webkit-inner-spin-button {
 
   <script>
     window.cartIsRetailOnly = {{ cart_is_retail_only | json }};
+    window.customerLoggedIn = {{ customer | json }} !== null;
   </script>
 
 {% schema %}

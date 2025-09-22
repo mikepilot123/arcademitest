@@ -21,7 +21,17 @@ $(".close-btn, .bg-overlay").click(function(){
 
 $(document).on("click",".btn_wrap_login .cartbuttonnew",function(e) {
 e.preventDefault();
-   $(".account_pp .custom-model-main").addClass('model-open');
+
+// Check if cart contains only retail products (bypass login modal)
+if (window.cartIsRetailOnly) {
+  console.log('Cart contains only retail products - bypassing login modal');
+  // Go directly to checkout for retail products
+  window.location.href = "/checkout";
+} else {
+  // Show login modal for non-retail products
+  console.log('Cart contains non-retail products - showing login modal');
+  $(".account_pp .custom-model-main").addClass('model-open');
+}
 });
 
 
@@ -74,6 +84,65 @@ $(document).on("click",".check .cartbuttonnew",function(){
      
 });
   
+// Helper function to check if cart contains only retail products
+function updateCartRetailStatus() {
+  $.ajax({
+    url: '/cart.js',
+    type: 'GET',
+    dataType: 'JSON',
+    success: function(cartData) {
+      var cartIsRetailOnly = true;
+      var cartHasItems = false;
+      
+      if (!cartData.items || cartData.items.length === 0) {
+        // Empty cart is treated as non-retail
+        cartIsRetailOnly = false;
+      } else {
+        cartHasItems = true;
+        
+        // Check each item in the cart
+        for (var i = 0; i < cartData.items.length; i++) {
+          var item = cartData.items[i];
+          var itemIsRetail = (item.properties && item.properties['is_retail'] === 'true');
+          
+          if (!itemIsRetail) {
+            cartIsRetailOnly = false;
+            break;
+          }
+        }
+      }
+      
+      // Update global variable
+      window.cartIsRetailOnly = cartIsRetailOnly;
+      console.log('Cart retail status updated:', cartIsRetailOnly ? 'RETAIL ONLY' : 'CONTAINS NON-RETAIL');
+      
+      // Update checkout button visibility dynamically
+      updateCheckoutButtonVisibility(cartIsRetailOnly);
+    },
+    error: function() {
+      console.log('Error checking cart retail status');
+      window.cartIsRetailOnly = false;
+    }
+  });
+}
+
+// Helper function to update checkout button visibility based on retail status
+function updateCheckoutButtonVisibility(cartIsRetailOnly) {
+  if (cartIsRetailOnly) {
+    // Show direct checkout button for retail products
+    $('.check_btn_bottom .shipping').show();
+    $('.check_btn_bottom .btn_wrap_login').hide();
+    console.log('Showing direct checkout for retail products');
+  } else {
+    // Show login button for non-retail products (if not logged in)
+    if (!window.customerLoggedIn) {
+      $('.check_btn_bottom .shipping').hide();
+      $('.check_btn_bottom .btn_wrap_login').show();
+      console.log('Showing login modal for non-retail products');
+    }
+  }
+}
+
 // Helper function to force immediate price update
 function updateCartPrice() {
   $.ajax({
@@ -694,6 +763,8 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
                 $("body form.cart-add").remove();
                 // Force immediate price update after adding item
                 updateCartPrice();
+                // Update retail status for checkout button logic
+                updateCartRetailStatus();
                 // STEP 2: After adding non-retail product, clear any retail products
                 clearRetailProductsFromCart();
             } 
@@ -736,6 +807,8 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
                 updateCart();
                 // Force immediate price update after adding item
                 updateCartPrice();
+                // Update retail status for checkout button logic
+                updateCartRetailStatus();
                 // STEP 2: After adding non-retail product, clear any retail products
                 clearRetailProductsFromCart();
             }
@@ -821,6 +894,8 @@ function clearRetailProductsFromCart() {
           console.log('Server confirmed removal of retail products');
           // Force immediate price update after server confirms removal
           updateCartPrice();
+          // Update retail status for checkout button logic
+          updateCartRetailStatus();
         })
         .catch((error) => {
           console.error('Failed to remove retail products from server:', error);
@@ -913,6 +988,8 @@ function clearNonRetailProductsFromCart() {
           console.log('Server confirmed removal of non-retail products');
           // Force immediate price update after server confirms removal
           updateCartPrice();
+          // Update retail status for checkout button logic
+          updateCartRetailStatus();
         })
         .catch((error) => {
           console.error('Failed to remove non-retail products from server:', error);
@@ -1019,6 +1096,8 @@ $(document).on("click", "button.add_cartretail", function() {
       updateCart();
       // Force immediate price update after adding retail item
       updateCartPrice();
+      // Update retail status for checkout button logic
+      updateCartRetailStatus();
       // STEP 2: After adding retail product, clear any non-retail products
       clearNonRetailProductsFromCart();
     },
