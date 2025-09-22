@@ -402,6 +402,12 @@
       endif
     endfor
   endif
+  
+  # Get the first menu item URL for logo link
+  assign first_menu_item_url = menu_home_url
+  if current_menu != blank and current_menu.links.size > 0
+    assign first_menu_item_url = current_menu.links.first.url
+  endif
 -%}
 
 <{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
@@ -432,7 +438,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ section.settings.logo_link | default: menu_home_url }}" class="header__heading-link link link--text focus-inset">
+          <a href="{{ section.settings.logo_link | default: first_menu_item_url }}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
@@ -472,7 +478,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ section.settings.logo_link | default: menu_home_url }}" class="header__heading-link link link--text focus-inset">
+          <a href="{{ section.settings.logo_link | default: first_menu_item_url }}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
