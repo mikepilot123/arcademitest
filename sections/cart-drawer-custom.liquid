@@ -103,22 +103,21 @@
       <!-- Cart Drawer CheckOut Button Start -->
      <div class="check_btn_bottom">
     {% comment %}
-      Show checkout button if:
-      - Customer is logged in
-      OR
-      - Cart contains only retail products (bypass login)
+      For retail products: No checkout button - automatic redirect
+      For non-retail products: Show appropriate checkout button based on login status
     {% endcomment %}
-    {% if customer or cart_is_retail_only %}
-    <div class="shipping" style="display:none;">
-      <div class="btn_wrap check">
-       <a class="cartbuttonnew" href="/checkout">CheckOut</a>
-      </div>
-   </div>
-    {% endif %}
-    {% unless customer or cart_is_retail_only %}    
-      <div class="btn_wrap_login">
-       <span class="cartbuttonnew">CheckOut</span>
-      </div> 
+    {% unless cart_is_retail_only %}
+      {% if customer %}
+      <div class="shipping" style="display:none;">
+        <div class="btn_wrap check">
+         <a class="cartbuttonnew" href="/checkout">CheckOut</a>
+        </div>
+     </div>
+      {% else %}    
+        <div class="btn_wrap_login">
+         <span class="cartbuttonnew">CheckOut</span>
+        </div> 
+      {% endif %}
     {% endunless %}
        <div class="btn_shop">
        <a class="btn" href="/collections">Continue Shop</a>
