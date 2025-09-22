@@ -165,10 +165,10 @@ $(".cart_button_custom").addClass("redirecttocart");
      $(".cart-drawer .subtotal-sec").append("<div class='total-price'>"+curr+finalprice+"</div>");
      var itemcount=res['item_count'];
      
-      setTimeout(function(){
-       $(".site-header__cart-count span").text(itemcount);
-         $(".site-header__cart-count").removeClass("hide");
-      },1000);
+      // Update cart count immediately in header (always show, even when 0)
+      $(".cart-count-bubble span[aria-hidden='true']").text(itemcount);
+      $(".cart-count-bubble span.visually-hidden").text("Cart (" + itemcount + " items)");
+      $(".cart-count-bubble").show();
       
       var i; var j;
       $(".content-block").remove();
@@ -443,10 +443,8 @@ $(document).on("click","button.minus_quantity",function(){
     $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
     $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
     
-    // Hide cart count if empty
-    if (newCount === 0) {
-      $(".cart-count-bubble").hide();
-    }
+    // Always show cart count, even when 0
+    $(".cart-count-bubble").show();
     
     // If quantity becomes 0, remove the item from display
     if (qty === 0) {
@@ -516,10 +514,8 @@ $(document).on("click", ".content-block .remove", function() {
     $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
     $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
     
-    // Hide cart count if empty
-    if (newCount === 0) {
-      $(".cart-count-bubble").hide();
-    }
+    // Always show cart count, even when 0
+    $(".cart-count-bubble").show();
     
     // Build updates object for server sync
     let updates = key.reduce((acc, id) => {
@@ -756,9 +752,8 @@ function clearRetailProductsFromCart() {
     $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
     $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
     
-    if (newCount === 0) {
-      $(".cart-count-bubble").hide();
-    }
+    // Always show cart count
+    $(".cart-count-bubble").show();
     
     // SERVER SYNC: Remove items from server cart
     var updates = {};
@@ -828,9 +823,8 @@ function clearNonRetailProductsFromCart() {
     $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
     $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
     
-    if (newCount === 0) {
-      $(".cart-count-bubble").hide();
-    }
+    // Always show cart count
+    $(".cart-count-bubble").show();
     
     // SERVER SYNC: Remove items from server cart
     var updates = {};
