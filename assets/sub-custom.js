@@ -214,18 +214,23 @@ console.log(sell_name);
    $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .image").append("<div class='img'><img src="+img+"></div>");
 
    $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .titlesec").append("<div class='title'><a href='"+producturl+"'>" +title+ "</a></div>");
-   // Check if product has retail tag by extracting handle from URL
+   // Display price immediately with Ex. VAT (default for non-retail)
+   $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox").append("<div data-price='"+price+"' class='price price-"+i+"'>"+curr+price+ " Ex. VAT</div>");
+   
+   // Then check if product has retail tag and update accordingly
    const productHandle = items[i]['url'].replace('/products/', '').split('?')[0];
    fetch('/products/' + productHandle + '.js')
      .then(response => response.json())
      .then(productData => {
        const isRetail = productData.tags && productData.tags.includes('retail');
-       const vatText = isRetail ? '' : ' Ex. VAT';
-       $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox").append("<div data-price='"+price+"' class='price'>"+curr+price+ vatText+"</div>");
+       if (isRetail) {
+         // Update price to remove Ex. VAT for retail products
+         $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox .price-"+i).html(curr+price);
+       }
      })
      .catch(() => {
-       // Fallback: assume non-retail if fetch fails
-       $(".cart-drawer-sec .bottom .content-block .loop-"+i+" .content .quantitybox").append("<div data-price='"+price+"' class='price'>"+curr+price+ " Ex. VAT</div>");
+       // Keep default Ex. VAT if fetch fails (non-retail assumption)
+       console.log('Could not fetch product data for', productHandle, '- keeping Ex. VAT');
      });
 
        
