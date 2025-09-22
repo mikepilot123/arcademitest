@@ -1,0 +1,27 @@
+<div class="page-width">
+  <div class="about-img-sec-wrap">
+    {% if section.settings.img != blank %}
+  <div class="about-img-sec-innr">
+  <img src="{{ section.settings.img | img_url:''}}" height="" width="" loading="lazy">
+</div>
+{% endif %}
+</div>
+</div>
+
+{% schema %}
+  {
+    "name": "about-img-sec",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "img",
+        "label": "select-image"
+      }
+    ],
+    "presets": [
+      {
+        "name": "about-img-sec"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,556 @@
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- unless section.settings.quick_add == 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{%- endunless -%}
+
+{%- if section.settings.quick_add == 'standard' -%}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.quick_add == 'bulk' -%}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
+  {% comment %} Section header {% endcomment %}
+  {%- if section.settings.title != blank or section.settings.description != blank -%}
+    <div class="collection-style-homepage__header page-width">
+      {%- if section.settings.title != blank -%}
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.title }}
+        </h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <div class="collection-style-homepage__description rte">
+          {{ section.settings.description }}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- assign selected_collection = section.settings.featured_collection -%}
+  <div
+    class="product-grid-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    id="ProductGridContainer"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+    {% endif %}
+  >
+    {%- if selected_collection == blank or selected_collection.products.size == 0 -%}
+      <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
+        <div class="loading-overlay gradient"></div>
+        <div class="title-wrapper center">
+          <h2 class="title title--primary">
+            No products found
+          </h2>
+          <p>Please select a different collection with products</p>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="collection page-width">
+        <div class="loading-overlay gradient"></div>
+        <ul
+          id="product-grid"
+          data-id="{{ section.id }}"
+          class="
+            grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down
+            grid--{{ section.settings.columns_desktop }}-col-desktop
+            {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
+          "
+        >
+          {% assign skip_card_product_styles = false %}
+          {%- liquid
+            assign products_to_display = section.settings.products_to_show | default: 12
+            if selected_collection.products.size > products_to_display
+              assign products_limit = products_to_display
+            else
+              assign products_limit = selected_collection.products.size
+            endif
+          -%}
+          
+          {%- for product in selected_collection.products limit: products_limit -%}
+            {% assign lazy_load = false %}
+            {%- if forloop.index > 2 -%}
+              {%- assign lazy_load = true -%}
+            {%- endif -%}
+            <li
+              class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+              {% if settings.animations_reveal_on_scroll %}
+                data-cascade
+                style="--animation-order: {{ forloop.index }};"
+              {% endif %}
+            >
+              {%- assign display_image = product.metafields.custom.display_image -%}
+              {% if display_image %}
+                {%- liquid
+                  assign ratio = 0.8
+                -%}
+                
+                <div class="card-wrapper product-card-wrapper underline-links-hover">
+                  <div
+                    class="
+                      card card--{{ settings.card_style }}
+                      {% if display_image %} card--media{% else %} card--text{% endif %}
+                      {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
+                      {% if section.settings.image_shape and section.settings.image_shape != 'default' %} card--shape{% endif %}
+                      card--extend-height
+                      {% if display_image == nil and settings.card_style == 'card' %} ratio{% endif %}
+                    "
+                    style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+                  >
+                    
+                    <a
+                     href="{{ product.url }}"
+                      id="StandardCardNoMediaLink-{{ section.id }}-{{ product.id }}"
+                      class="full-unstyled-link"
+                      aria-labelledby="StandardCardNoMediaLink-{{ section.id }}-{{ product.id }} NoMediaStandardBadge-{{ section.id }}-{{ product.id }}"
+                    >
+                    <div
+                      class="card__inner {% if settings.card_style == 'standard' %}color-{{ settings.card_color_scheme }} gradient{% endif %}{% if display_image or settings.card_style == 'standard' %} ratio{% endif %}"
+                      style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+                    >
+                      {%- if display_image -%}
+                        <div class="card__media{% if section.settings.image_shape and section.settings.image_shape != 'default' %} shape--{{ section.settings.image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
+                          <div class="media media--transparent media--hover-effect">
+                            
+                            {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
+                            <img
+                              src="{{ display_image | image_url: width: 533 }}"
+                              sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                              alt="{{ display_image.alt | default: product.title | escape }}"
+                              class="custom_product-featured_image motion-reduce"
+                              {% unless lazy_load == false %}
+                                loading="lazy"
+                              {% endunless %}
+                              width="{{ display_image.width }}"
+                              height="{{ display_image.height }}"
+                            >
+                            {% comment %}theme-check-enable ImgLazyLoading{% endcomment %}
+                          </div>
+                        </div>
+                      {%- endif -%}
+                      <div class="card__content">
+                        <div class="card__information">
+                          <h3
+                            class="card__heading"
+                            {% if display_image == null and settings.card_style == 'standard' %}
+                              id="title-{{ section.id }}-{{ product.id }}"
+                            {% endif %}
+                          >
+                              {{ product.title | escape }}
+                          </h3>
+                        </div>
+                        <div class="card__badge {{ settings.badge_position }}">
+                          {%- if product.available == false -%}
+                            <span
+                              id="NoMediaStandardBadge-{{ section.id }}-{{ product.id }}"
+                              class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+                            >
+                              {{- 'products.product.sold_out' | t -}}
+                            </span>
+                          {%- elsif product.compare_at_price > product.price and product.available -%}
+                            <span
+                              id="NoMediaStandardBadge-{{ section.id }}-{{ product.id }}"
+                              class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
+                            >
+                              {{- 'products.product.on_sale' | t -}}
+                            </span>
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    </div>
+                    </a>
+                    <div class="card__content">
+                      <div class="card__information">
+                        <h3
+                          class="card__heading{% if display_image or settings.card_style == 'standard' %} h5{% endif %}"
+                          {% if display_image or settings.card_style == 'card' %}
+                            id="title-{{ section.id }}-{{ product.id }}"
+                          {% endif %}
+                        >
+                          <a
+                            href="{{ product.url }}"
+                            id="CardLink-{{ section.id }}-{{ product.id }}"
+                            class="full-unstyled-link clr_drk_navy f-18 f-600"
+                            aria-labelledby="CardLink-{{ section.id }}-{{ product.id }} Badge-{{ section.id }}-{{ product.id }}"
+                          >
+                            {{ product.title | escape | truncate:50}}
+                          </a>
+                        </h3>
+                        <div class="card-information">
+                          {%- if section.settings.show_vendor -%}
+                            <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+                            <div class="caption-with-letter-spacing light">{{ product.vendor }}</div>
+                          {%- endif -%}
+
+                          {% render 'price', product: product, price_class: '', show_compare_at_price: true %}
+                        </div>
+                      </div>
+                      <div class="card__badge {{ settings.badge_position }}">
+                        {%- if product.available == false -%}
+                          <span
+                            id="Badge-{{ section.id }}-{{ product.id }}"
+                            class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+                          >
+                            {{- 'products.product.sold_out' | t -}}
+                          </span>
+                        {%- elsif product.compare_at_price > product.price and product.available -%}
+                          <span
+                            id="Badge-{{ section.id }}-{{ product.id }}"
+                            class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
+                          >
+                            {{- 'products.product.on_sale' | t -}}
+                          </span>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                {% render 'card-product',
+                  card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  lazy_load: lazy_load,
+                  skip_styles: skip_card_product_styles,
+                  quick_add: section.settings.quick_add,
+                  section_id: section.id,
+                  extend_height: true
+                %}
+              {% endif %}
+            </li>
+            {%- assign skip_card_product_styles = true -%}
+          {%- endfor -%}
+        </ul>
+
+        {% comment %} View all button {% endcomment %}
+        {%- if section.settings.show_view_all and selected_collection.products.size > products_to_display -%}
+          <div class="collection-style-homepage__view-all center">
+            <a 
+              href="{{ selected_collection.url }}" 
+              class="button button--primary"
+              aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: selected_collection.title }}"
+            >
+              {% if section.settings.view_all_text != blank %}{{ section.settings.view_all_text }}{% else %}{{ 'sections.featured_collection.view_all' | t }}{% endif %}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {% if section.settings.image_shape == 'arch' %}
+    {% render 'mask-arch' %}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .collection-style-homepage__header {
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .collection-style-homepage__header .title {
+    margin-bottom: 1rem;
+    color: rgb(30, 45, 64);
+  }
+
+  .collection-style-homepage__description {
+    margin-bottom: 0;
+    color: rgba(var(--color-foreground), 0.7);
+  }
+
+  .collection-style-homepage__description p {
+    margin-bottom: 0;
+  }
+
+  .collection-style-homepage__view-all {
+    margin-top: 4rem;
+  }
+
+  .collection-style-homepage {
+    margin: 0 auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .collection-style-homepage__header {
+      margin-bottom: 2.5rem;
+    }
+
+    .collection-style-homepage__view-all {
+      margin-top: 2.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection Grid",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "Featured Products",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h2",
+      "label": "Heading size"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12,
+      "label": "Maximum products to show"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Number of columns on desktop"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "default": true,
+      "label": "Show 'View all' button"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all button text",
+      "default": "View all",
+      "info": "Leave blank to use default translation"
+    },
+    {
+      "type": "header",
+      "content": "Product cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
+      ],
+      "default": "adapt",
+      "label": "Image ratio"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "arch",
+          "label": "Arch"
+        },
+        {
+          "value": "blob",
+          "label": "Blob"
+        },
+        {
+          "value": "chevronleft",
+          "label": "Chevron left"
+        },
+        {
+          "value": "chevronright",
+          "label": "Chevron right"
+        },
+        {
+          "value": "diamond",
+          "label": "Diamond"
+        },
+        {
+          "value": "parallelogram",
+          "label": "Parallelogram"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "default",
+      "label": "Image shape"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "Show second product image on hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show product vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "Show product rating",
+      "info": "To display a rating, add a product rating app. [Learn more](https://help.shopify.com/manual/online-store/themes/theme-structure/theme-features#featured-collection-show-product-rating)"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "Quick add",
+      "info": "Adds a quick add button to the product card. [Learn more](https://help.shopify.com/manual/online-store/themes/theme-structure/theme-features#featured-collection-quick-add)",
+      "options": [
+        {
+          "value": "none",
+          "label": "Disabled"
+        },
+        {
+          "value": "standard",
+          "label": "Enabled"
+        },
+        {
+          "value": "bulk",
+          "label": "Bulk"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "Number of columns on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Grid"
+    }
+  ]
+}
+{% endschema %}

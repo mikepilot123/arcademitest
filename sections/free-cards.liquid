@@ -1,0 +1,292 @@
+<section class="custom-free-cards color-{{ section.settings.color_scheme }}">
+  <div class="page-width">
+    <div class="inner-box">
+      <div class="top-box">
+        <div class="desc f-18 plus-jakarta-sans">{{ section.settings.desc }}</div>
+        <div class="card-btns">
+          <a href="{{ section.settings.frst_btn_url }}" class="cstm-btn btn" target="_blank"><img src="{{ section.settings.frst_btn_img | img_url: 'master' }}" class="cstm-img" height="" width="" loading="lazy"/></a>
+          <a href="{{ section.settings.scnd_btn_url }}" class="cstm-btn btn" target="_blank"><img src="{{ section.settings.scnd_btn_img | img_url: 'master' }}" class="cstm-img" height="" width="" loading="lazy"/></a>
+        </div>
+      </div>
+      <div class="free-cards">
+        {% for block in section.blocks %}
+          <div class="item">
+            <div class="image-box">
+              <img src="{{ block.settings.pdf_img | img_url: 'master' }}" class="cstm-img" width="" height="" loading="lazy"/>
+            </div>
+            <div class="icon">
+            <a href="javascript:void(0);"data-src="{{ block.settings.pdf_url }}" class="download-image" img_name="{{ block.settings.image_name }}">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                  <path d="M4.9937,15.9971 L4.9937,18.4971 C4.9937,18.7721 5.2177,18.9971 5.4937,18.9971 L5.4937,18.9971 L17.4937,18.9971 C17.7697,18.9971 17.9937,18.7721 17.9937,18.4971 L17.9937,18.4971 L17.9937,15.9971 L18.9937,15.9971 L18.9937,18.4971 C18.9937,19.3241 18.3207,19.9971 17.4937,19.9971 L17.4937,19.9971 L5.4937,19.9971 C4.6657,19.9971 3.9937,19.3241 3.9937,18.4971 L3.9937,18.4971 L3.9937,15.9971 L4.9937,15.9971 Z M11.9933,4 L11.9933,14.078 L15.0293,11.043 L15.7363,11.75 L11.4933,15.992 L7.2513,11.75 L7.9583,11.043 L10.9933,14.078 L10.9933,4 L11.9933,4 Z" fill-rule="evenodd"></path>
+                </svg>
+            </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Lightbox Container -->
+<div class="lightbox">
+    <img src="" alt="Lightbox Image">
+    <a id="download-btn" href="#" download class="download-button"><svg viewBox="0 0 24 24" fill="#fff" width="24" height="24">
+                  <path d="M4.9937,15.9971 L4.9937,18.4971 C4.9937,18.7721 5.2177,18.9971 5.4937,18.9971 L5.4937,18.9971 L17.4937,18.9971 C17.7697,18.9971 17.9937,18.7721 17.9937,18.4971 L17.9937,18.4971 L17.9937,15.9971 L18.9937,15.9971 L18.9937,18.4971 C18.9937,19.3241 18.3207,19.9971 17.4937,19.9971 L17.4937,19.9971 L5.4937,19.9971 C4.6657,19.9971 3.9937,19.3241 3.9937,18.4971 L3.9937,18.4971 L3.9937,15.9971 L4.9937,15.9971 Z M11.9933,4 L11.9933,14.078 L15.0293,11.043 L15.7363,11.75 L11.4933,15.992 L7.2513,11.75 L7.9583,11.043 L10.9933,14.078 L10.9933,4 L11.9933,4 Z" fill-rule="evenodd"></path>
+                </svg>
+    </a>
+    <span class="prev">&#10094;</span> <!-- Left arrow -->
+    <span class="next">&#10095;</span> <!-- Right arrow -->
+    <span class="close">&times;</span> <!-- Close button -->
+</div>
+<style>
+  /* Lightbox container */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Lightbox image */
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80%;
+            border: 2px solid white;
+        }
+
+        /* Navigation buttons */
+        .lightbox .prev, .lightbox .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .lightbox .prev {
+            left: 10px;
+        }
+
+        .lightbox .next {
+            right: 10px;
+        }
+
+        /* Close button */
+        .lightbox .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
+  .download-button {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    color: white;
+    font-size: 20px;
+    background-color: #333;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+</style>
+{% schema %}
+  {
+    "name": "Free cards",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "desc",
+        "label": "Description"
+      },
+      {
+        "type": "image_picker",
+        "id": "frst_btn_img",
+        "label": "Button Image"
+      },
+      {
+        "type": "url",
+        "id": "frst_btn_url",
+        "label": "paste Button url here"
+      },
+      {
+        "type": "image_picker",
+        "id": "scnd_btn_img",
+        "label": "Button Image"
+      },
+      {
+        "type": "url",
+        "id": "scnd_btn_url",
+        "label": "Paste Button url here"
+      },
+      {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    }
+    ],
+    "blocks": [
+      {
+        "type": "pdf",
+        "name": "pdf",
+        "settings": [
+          {
+        "type": "text",
+        "id": "image_name",
+        "label": "Image-name"
+      },
+          {
+            "type": "image_picker",
+            "id": "pdf_img",
+            "label": "Choose Image"
+          },
+          {
+            "type": "url",
+            "id": "pdf_url",
+            "label": "paste url here"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Free cards",
+        "category": "custom"
+      }
+    ]
+  }
+{% endschema %}
+<script>
+// document.querySelectorAll('.download-image').forEach(function(downloadLink) {
+//   downloadLink.addEventListener('click', function() {
+//     // Get the data-src attribute value
+//     let imageUrl = this.getAttribute('data-src');
+
+//     // Extract the filename before the unique identifier and the query string
+//     let baseImageUrl = imageUrl.split('?')[0]; // Remove query parameters
+    
+//     let imageParts = baseImageUrl.split('_');
+  
+//     if (imageParts.length > 1) {
+//       // Rebuild the URL by removing the unique identifier part
+//       let cleanImageUrl = imageParts.slice(0, imageParts.length - 1).join('_') + '.png';
+    
+//       // Create a temporary anchor element for downloading
+//       let downloadElement = document.createElement('a');
+//       downloadElement.href = cleanImageUrl;
+
+//       // Extract the clean filename from the URL
+//       let fileName = cleanImageUrl.substring(cleanImageUrl.lastIndexOf('/') + 1);
+//       downloadElement.setAttribute('download', fileName);
+
+//       // Trigger the download
+//       downloadElement.click();
+//     } else {
+//       console.error('Invalid image format or URL structure.');
+//     }
+//   });
+// });
+
+
+
+
+   $(document).ready(function() {
+        $('.free-cards .icon .download-image').click(async function(e) {
+            e.preventDefault(); // Prevent default action
+
+            // Get the image URL and file name
+            var imageUrl = $(this).attr('data-src');
+          var fileName = $(this).attr('img_name') || 'downloaded_image'; // Default file name if img_name is not set
+            fileName += '.png'; 
+            try {
+                // Fetch the image
+                let response = await fetch(imageUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                let blob = await response.blob();
+                let url = URL.createObjectURL(blob);
+                
+                // Create a temporary anchor element
+                let $tempLink = $('<a>')
+                    .attr('href', url)
+                    .attr('download', fileName)
+                    .appendTo('body');
+
+                // Trigger the download
+                $tempLink[0].click();
+
+                // Clean up
+                $tempLink.remove();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Download failed:', error);
+            }
+        });
+    });
+
+</script>
+<script>
+    // Select all .image-box elements in the gallery
+    const galleryItems = document.querySelectorAll('.free-cards .item .image-box');
+    const lightbox = document.querySelector('.lightbox');
+    const lightboxImg = lightbox.querySelector('img');
+    const downloadBtn = document.getElementById('download-btn');
+    const prevBtn = lightbox.querySelector('.prev');
+    const nextBtn = lightbox.querySelector('.next');
+    const closeBtn = lightbox.querySelector('.close');
+
+    let currentIndex = 0;
+
+    function showLightbox(index) {
+        currentIndex = index;
+        const imgElement = galleryItems[index].querySelector('img');
+        lightboxImg.src = imgElement.src;
+        downloadBtn.href = imgElement.src;
+        lightbox.style.display = 'flex';
+    }
+
+    function hideLightbox() {
+        lightbox.style.display = 'none';
+    }
+
+    function showNext() {
+        currentIndex = (currentIndex + 1) % galleryItems.length;
+        const imgElement = galleryItems[currentIndex].querySelector('img');
+        lightboxImg.src = imgElement.src;
+        downloadBtn.href = imgElement.src;
+    }
+
+    function showPrev() {
+        currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+        const imgElement = galleryItems[currentIndex].querySelector('img');
+        lightboxImg.src = imgElement.src;
+        downloadBtn.href = imgElement.src;
+    }
+
+    // Attach event listeners to .image-box elements
+    galleryItems.forEach((box, index) => {
+        box.addEventListener('click', () => showLightbox(index));
+    });
+
+    closeBtn.addEventListener('click', hideLightbox);
+    nextBtn.addEventListener('click', showNext);
+    prevBtn.addEventListener('click', showPrev);
+
+    // Close lightbox when clicking outside the image
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            hideLightbox();
+        }
+    });
+</script>

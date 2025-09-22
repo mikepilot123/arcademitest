@@ -1,0 +1,116 @@
+/* 
+ * RETAIL PRODUCTS MEDIA GALLERY FIX
+ * Only applies to products with the retail tag using the retail-products template
+ */
+
+/* Thumbnail slider visibility for retail products */
+.retail-products slider-component.thumbnail-slider,
+.retail-product slider-component.thumbnail-slider {
+  display: block !important;
+}
+
+/* MAIN FIX: In thumbnail layouts, only show the active (main) item in the main gallery */
+.retail-products.product--thumbnail .custom-product-images .product__media-item:not(.is-active),
+.retail-products.product--thumbnail_slider .custom-product-images .product__media-item:not(.is-active),
+.retail-product.product--thumbnail .custom-product-images .product__media-item:not(.is-active),
+.retail-product.product--thumbnail_slider .custom-product-images .product__media-item:not(.is-active) {
+  display: none !important;
+}
+
+/* Override grid system: Force single main item to take full width */
+.retail-products.product--thumbnail .custom-product-images .product__media-item.is-active,
+.retail-products.product--thumbnail_slider .custom-product-images .product__media-item.is-active,
+.retail-product.product--thumbnail .custom-product-images .product__media-item.is-active,
+.retail-product.product--thumbnail_slider .custom-product-images .product__media-item.is-active {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex-basis: 100% !important;
+}
+
+/* Ensure the main media gallery doesn't use grid layout for thumbnails */
+.retail-products.product--thumbnail .custom-product-images.grid,
+.retail-products.product--thumbnail_slider .custom-product-images.grid,
+.retail-product.product--thumbnail .custom-product-images.grid,
+.retail-product.product--thumbnail_slider .custom-product-images.grid {
+  display: block !important;
+}
+
+/* Reset grid item behavior for main media in thumbnail mode */
+.retail-products.product--thumbnail .custom-product-images .grid__item,
+.retail-products.product--thumbnail_slider .custom-product-images .grid__item,
+.retail-product.product--thumbnail .custom-product-images .grid__item,
+.retail-product.product--thumbnail_slider .custom-product-images .grid__item {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure thumbnail slider functionality works */
+.retail-products.product--thumbnail .thumbnail-slider,
+.retail-products.product--thumbnail_slider .thumbnail-slider,
+.retail-product.product--thumbnail .thumbnail-slider,
+.retail-product.product--thumbnail_slider .thumbnail-slider {
+  display: block !important;
+}
+
+/* Make sure thumbnails are smaller and don't interfere with main display */
+.retail-products.product--thumbnail .thumbnail-list .product__media-item,
+.retail-products.product--thumbnail_slider .thumbnail-list .product__media-item,
+.retail-product.product--thumbnail .thumbnail-list .product__media-item,
+.retail-product.product--thumbnail_slider .thumbnail-list .product__media-item {
+  width: auto !important;
+  max-width: 120px;
+}
+
+/* Additional fix: Ensure all non-active media items are hidden on retail products */
+.retail-products .custom-product-images .product__media-item:not(.is-active),
+.retail-product .custom-product-images .product__media-item:not(.is-active) {
+  display: none !important;
+}
+
+/* Ensure the active media item is visible and takes full space */
+.retail-products .custom-product-images .product__media-item.is-active,
+.retail-product .custom-product-images .product__media-item.is-active {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Force single column layout for main media on retail products */
+.retail-products .custom-product-images,
+.retail-product .custom-product-images {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+}
+
+/* Ensure product media container takes full width on retail products */
+.retail-products .product__media-wrapper,
+.retail-product .product__media-wrapper {
+  width: 100% !important;
+}
+
+@media screen and (max-width: 767px) {
+  /* Hide thumbnail slider buttons on mobile */
+  .product slider-component.thumbnail-slider button.slider-button {
+    display: none;
+  }
+
+  /* For mobile: Show all media items in slider but only one active at a time */
+  .slider-mobile-gutter li.product__media-item.grid__item.slider__slide {
+    display: block !important;
+  }
+  
+  /* In thumbnail mode on mobile, only show active item */
+  .product--thumbnail .product__media-list .product__media-item:not(.is-active),
+  .product--thumbnail_slider .product__media-list .product__media-item:not(.is-active) {
+    display: none !important;
+  }
+  
+  /* Ensure active media is always visible */
+  .product__media-list .product__media-item.is-active {
+    display: block !important;
+  }
+}
+  

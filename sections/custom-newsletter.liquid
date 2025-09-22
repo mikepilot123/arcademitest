@@ -1,0 +1,194 @@
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+<div class="custom_newsletter_wrap section-{{ section.id }}-padding">
+  <div class="page-width">
+    <div class="custom_newsletter_row">
+      <div class="custom_newsletter_col">
+        {% if section.settings.content != blank %}
+        <div class="custom_newsletter_left">
+          {{ section.settings.content }}
+        </div>
+        {% endif %}
+      </div>
+      <div class="custom_newsletter_col">
+        <div class="custom_newsletter_right">
+          <div id="mc_embed_shell">
+            <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css" rel="stylesheet" type="text/css">
+            <div id="mc_embed_signup">
+                <form action="https://arcademi.us10.list-manage.com/subscribe/post?u=94d2d6bc02ca68a74df6e7dae&amp;id=938ab2718a&amp;f_id=00858ae3f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
+                    <div id="mc_embed_signup_scroll">
+                        <div class="mc-field-group"><input type="email" name="EMAIL" placeholder="Enter your email address" class="required email" id="mce-EMAIL" required="" value=""></div>
+                    <div id="mce-responses" class="clear">
+                        <div class="response" id="mce-error-response" style="display: none;"></div>
+                        <div class="response" id="mce-success-response" style="display: none;"></div>
+                    </div><div aria-hidden="true" style="position: absolute; left: -5000px;"><input type="text" name="b_94d2d6bc02ca68a74df6e7dae_938ab2718a" tabindex="-1" value=""></div><div class="clear"><input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button" value="Subscribe"></div>
+                </div>
+            </form>
+        </div>
+       </div>
+          {% comment %}
+          {% form 'customer', class: 'newsletter-form_custom' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div
+                class="newsletter-form__field-wrapper_custom{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }};"
+                {% endif %}
+              >
+                <div class="field_box">
+                  <input
+                    id="NewsletterForm--{{ section.id }}"
+                    type="email"
+                    name="contact[email]"
+                    class="field__input_custom"
+                    value="{{ form.email }}"
+                    aria-required="true"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    autocomplete="email"
+                    {% if form.errors %}
+                      autofocus
+                      aria-invalid="true"
+                      aria-describedby="Newsletter-error--{{ section.id }}"
+                    {% elsif form.posted_successfully? %}
+                      aria-describedby="Newsletter-success--{{ section.id }}"
+                    {% endif %}
+                    placeholder="Enter your email address"
+                    required
+                  >
+                  {% comment %}
+                  <label class="field__label" for="NewsletterForm--{{ section.id }}">
+                    {{ 'newsletter.label' | t }}
+                  </label>
+                  {% endcomment %}
+                  <button
+                    type="submit"
+                    class="newsletter-form__button_custom field__button_custom"
+                    name="commit"
+                    id="Subscribe"
+                    aria-label="{{ 'newsletter.button_label' | t }}"
+                  >
+                    Subscribe
+                    {% comment %}{% render 'icon-arrow' %}{% endcomment %}
+                  </button>
+                </div>
+                {%- if form.errors -%}
+                  <small class="newsletter-form__message form__message" id="Newsletter-error--{{ section.id }}">
+                    {%- render 'icon-error' -%}
+                    {{- form.errors.translated_fields.email | capitalize }}
+                    {{ form.errors.messages.email -}}
+                  </small>
+                {%- endif -%}
+              </div>
+              {%- if form.posted_successfully? -%}
+                <h3
+                  class="newsletter-form__message newsletter-form__message--success form__message"
+                  id="Newsletter-success--{{ section.id }}"
+                  tabindex="-1"
+                  autofocus
+                >
+                  {% render 'icon-success' -%}
+                  {{- 'newsletter.success' | t }}
+                </h3>
+              {%- endif -%}
+            {% endform %}
+          {% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+#mc_embed_signup #mc-embedded-subscribe-form input.email {
+    border: 0px solid #e85c41;
+    border-radius: 5px;
+    background: #EAEAEA;
+    padding: 12px 30px;
+    color: #1E2D40;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#mc_embed_signup{
+  background:#fff;
+  false;clear:left;
+  font-size:14px;
+}
+#mc_embed_signup .button {
+    color: #fff;
+    text-align: center;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    background-color: #f18a2e;
+    width: 100%;
+    border-radius: 5px;
+    padding: 12px 30px !important;
+    height: auto;
+}
+  #mc_embed_signup #mc-embedded-subscribe-form input.email:focus-visible{
+    outline:none;
+    box-shadow:none;
+  }
+  #mc_embed_signup .button:hover {
+    background-color: #f18a2e;
+}
+  #mc_embed_signup .mc-field-group {
+    width: 100%;
+}
+</style>
+{% schema %}
+  {
+  "name": "custom newsletter",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "content",
+      "label": "Richtext"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "custom newsletter",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
