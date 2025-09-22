@@ -638,17 +638,23 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
 
 
 $(document).on("click", "button.add_cartretail", function() {
-  // For retail products, use standard Shopify variant ID from product form
+  // For retail products, get variant ID directly from button data attributes
   console.log("Clicking Michael");
   $('body').addClass("js-drawer-open-right");
   var qty = 1;
   
-  // Get variant ID - try multiple methods for retail products
-  var var_id = $('.product-variant-id').val(); // Standard Shopify form method
+  // Method 0: Get variant ID directly from button data attributes (most reliable for retail)
+  var var_id = $(this).data('variant-id');
+  var product_id = $(this).data('product-id');
   
-  // If not found, try alternative methods for retail products
+  // Fallback methods if data attributes are not available
   if (!var_id) {
-    // Method 1: Try to get from data-selected-variant JSON script
+    // Method 1: Try standard Shopify form method
+    var_id = $('.product-variant-id').val();
+  }
+  
+  if (!var_id) {
+    // Method 2: Try to get from data-selected-variant JSON script
     try {
       var selectedVariantScript = $('script[data-selected-variant]').text();
       if (selectedVariantScript) {
@@ -660,9 +666,8 @@ $(document).on("click", "button.add_cartretail", function() {
     }
   }
   
-  // If still not found, try getting from URL or other sources
   if (!var_id) {
-    // Method 2: Try to get first available variant ID from page context
+    // Method 3: Try to get first available variant ID from page context
     var productInfoElement = $('product-info');
     if (productInfoElement.length > 0) {
       // Look for any hidden input with variant ID
@@ -673,17 +678,21 @@ $(document).on("click", "button.add_cartretail", function() {
     }
   }
   
-  // Method 3: Last resort - try to extract from URL parameters
+  // Method 4: Last resort - try to extract from URL parameters
   if (!var_id) {
     var urlParams = new URLSearchParams(window.location.search);
     var_id = urlParams.get('variant');
   }
   
-  // For retail products, we can get product ID from data attributes or page context
-  var product_id = $('product-info').attr('data-product-id') || '';
+  // Fallback for product ID if not in button data
+  if (!product_id) {
+    product_id = $('product-info').attr('data-product-id') || '';
+  }
   
   // Debug logging
   console.log("Retail add to cart - Variant ID:", var_id, "Product ID:", product_id);
+  console.log("Button data-variant-id:", $(this).data('variant-id'));
+  console.log("Button data-product-id:", $(this).data('product-id'));
   console.log("Available .product-variant-id inputs:", $('.product-variant-id').length);
   console.log("Available data-selected-variant scripts:", $('script[data-selected-variant]').length);
   console.log("Available input[name='id'] elements:", $('input[name="id"]').length);

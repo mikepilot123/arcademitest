@@ -48,7 +48,7 @@
 
  {%else%}
 
- <button class="add_cartretail button" click="{{ product-list-carousel }}" {% if current_tag == 'coming-soon' or product.selected_or_first_available_variant.available == false or quantity_rule_soldout or product.selected_or_first_available_variant == nil %}disabled{% endif %}>
+ <button class="add_cartretail button" click="{{ product-list-carousel }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}" data-product-id="{{ product.id }}" {% if current_tag == 'coming-soon' or product.selected_or_first_available_variant.available == false or quantity_rule_soldout or product.selected_or_first_available_variant == nil %}disabled{% endif %}>
   <span>
     {% if current_tag == 'coming-soon' %}
       Coming Soon
