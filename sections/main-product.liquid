@@ -175,10 +175,10 @@
                   
                         {% if product.metafields.custom.add_product_custom.value != blank %}+ {{ customproduct.price | money }} {% endif %}
 
-                  {% if product.tags contains 'retail' == false %}  
+                  {% unless product.tags contains 'retail' %}  
                       </span>
                       Ex. VAT
-                  {%endif%}      
+                  {%endunless%}      
 
 
                  

@@ -14,7 +14,7 @@
     <input type="checkbox" class="one_tt" name="purchase_option" id="one" >
     Flashcards & Wallets
      </div>
-     <span meta_pr="{{ customproduct.price }}"  class="price_pr f-14">{{ customproduct.price | money }}{% if product.tags contains 'retail' == false %}  Ex. VAT{% endif %}</span>
+     <span meta_pr="{{ customproduct.price }}"  class="price_pr f-14">{{ customproduct.price | money }}{% unless product.tags contains 'retail' %}  Ex. VAT{% endunless %}</span>
    </div>
    {{ block.settings.fst_txt }}
    
@@ -43,7 +43,7 @@
     <input type="checkbox" class="sub_tt" name="purchase_option" id="sub">
     Augmented Reality Subscription
      </div>
-  <span class="price_pr  f-14"><span class="main_pr f-14" style="display:none;">{{ product.price | money }}  </span><span cart_cur="{{ cart.currency.symbol }}" sub_price="{{ sub_price }}" class="sub_pr f-14">{{ sub_price | money }}</span>{% if product.tags contains 'retail' == false %} Ex. VAT{% endif %}</span>
+  <span class="price_pr  f-14"><span class="main_pr f-14" style="display:none;">{{ product.price | money }}  </span><span cart_cur="{{ cart.currency.symbol }}" sub_price="{{ sub_price }}" class="sub_pr f-14">{{ sub_price | money }}</span>{% unless product.tags contains 'retail' %} Ex. VAT{% endunless %}</span>
 </div>
       {{ block.settings.second_txt }}
    

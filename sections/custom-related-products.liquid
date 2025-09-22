@@ -59,7 +59,7 @@
                 </a>
                 <p class="clr-white f-14 f-600">
                   {% if request.path contains 'poster' %} {% else %}From {% endif %}
-                  {{ custom_product.selected_or_first_available_variant.price | money }}{% if custom_product.tags contains 'retail' == false %} Ex. VAT{% endif %} 
+                  {{ custom_product.selected_or_first_available_variant.price | money }}{% unless custom_product.tags contains 'retail' %} Ex. VAT{% endunless %} 
                 </p>
               </div>
             </div>
