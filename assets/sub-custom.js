@@ -549,7 +549,7 @@ $(document).on("click",'.cart-drawer .close',function(){
 $(document).on("click", "button.add_cart", function() {
     var btn = $(this).attr('click'); // Ensure this attribute exists on the button
 
-  
+  console.log("Clicking Michael");
     if (btn == 'true') {   
         var dt = new Date();
 var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
