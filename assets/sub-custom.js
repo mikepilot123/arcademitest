@@ -639,6 +639,8 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
 
 $(document).on("click", "button.add_cartretail", function() {
   // For Shopify AJAX API, use flat id/quantity/properties, not items[0][id]
+  console.log("Clicking Michael");
+  $('body').addClass("js-drawer-open-right");
   var qty = 1;
   var var_id = $('.main_sub_pr').attr('custom_id');
   var new_tax = $('.main_sub_pr').attr('meta_tax'); 
@@ -659,7 +661,7 @@ $(document).on("click", "button.add_cartretail", function() {
   if (new_id) data.properties["ID"] = new_id;
   if (new_tax) data.properties["Tax"] = new_tax;
 
-  $('body').addClass("js-drawer-open-right");
+  
 
   $.ajax({
     url: "/cart/add.js",
