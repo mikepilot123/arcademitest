@@ -638,15 +638,39 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
 
 
 $(document).on("click", "button.add_cartretail", function() {
-  console.log("Clicking Michael");
+  // For Shopify AJAX API, use flat id/quantity/properties, not items[0][id]
+  var qty = 1;
+  var var_id = $('.main_sub_pr').attr('custom_id');
+  var new_tax = $('.main_sub_pr').attr('meta_tax'); 
+  var new_id = $('.main_sub_pr').attr('new_id'); 
+
+  // Defensive: check for required values
+  if (!var_id) {
+    console.error("No variant ID found for add_cartretail");
+    return;
+  }
+
+  // Build data object for AJAX
+  var data = {
+    id: var_id,
+    quantity: qty,
+    properties: {}
+  };
+  if (new_id) data.properties["ID"] = new_id;
+  if (new_tax) data.properties["Tax"] = new_tax;
+
   $('body').addClass("js-drawer-open-right");
+
   $.ajax({
     url: "/cart/add.js",
     type: "POST",
-    data: formdata,
-    dataType: "JSON",
+    data: data,
+    dataType: "json",
     success: function(result) {
-        updateCart(); 
+      updateCart();
+    },
+    error: function(xhr, status, error) {
+      console.error("Error adding to cart:", error, xhr.responseText);
     }
-});
+  });
 });
