@@ -643,19 +643,54 @@ $(document).on("click", "button.add_cartretail", function() {
   $('body').addClass("js-drawer-open-right");
   var qty = 1;
   
-  // Get variant ID from standard Shopify product form
-  var var_id = $('.product-variant-id').val();
+  // Get variant ID - try multiple methods for retail products
+  var var_id = $('.product-variant-id').val(); // Standard Shopify form method
+  
+  // If not found, try alternative methods for retail products
+  if (!var_id) {
+    // Method 1: Try to get from data-selected-variant JSON script
+    try {
+      var selectedVariantScript = $('script[data-selected-variant]').text();
+      if (selectedVariantScript) {
+        var selectedVariant = JSON.parse(selectedVariantScript);
+        var_id = selectedVariant.id;
+      }
+    } catch (e) {
+      console.log("Could not parse selected variant JSON:", e);
+    }
+  }
+  
+  // If still not found, try getting from URL or other sources
+  if (!var_id) {
+    // Method 2: Try to get first available variant ID from page context
+    var productInfoElement = $('product-info');
+    if (productInfoElement.length > 0) {
+      // Look for any hidden input with variant ID
+      var hiddenInputs = productInfoElement.find('input[name="id"]');
+      if (hiddenInputs.length > 0) {
+        var_id = hiddenInputs.first().val();
+      }
+    }
+  }
+  
+  // Method 3: Last resort - try to extract from URL parameters
+  if (!var_id) {
+    var urlParams = new URLSearchParams(window.location.search);
+    var_id = urlParams.get('variant');
+  }
   
   // For retail products, we can get product ID from data attributes or page context
   var product_id = $('product-info').attr('data-product-id') || '';
   
   // Debug logging
   console.log("Retail add to cart - Variant ID:", var_id, "Product ID:", product_id);
+  console.log("Available .product-variant-id inputs:", $('.product-variant-id').length);
+  console.log("Available data-selected-variant scripts:", $('script[data-selected-variant]').length);
+  console.log("Available input[name='id'] elements:", $('input[name="id"]').length);
   
   // Defensive: check for required values
   if (!var_id) {
-    console.error("No variant ID found for add_cartretail - looking for .product-variant-id input");
-    console.log("Available inputs:", $('.product-variant-id').length);
+    console.error("No variant ID found for add_cartretail after trying multiple methods");
     return;
   }
 
