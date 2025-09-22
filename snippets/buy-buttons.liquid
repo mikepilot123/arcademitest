@@ -29,6 +29,7 @@
 
 {% comment %} Custom button - show only for NON-retail products {% endcomment %}
 
+{% unless product.tags contains 'retail' %}
 <button class="add_cart button" click="{{ product-list-carousel }}" {% if current_tag == 'coming-soon' or product.selected_or_first_available_variant.available == false or quantity_rule_soldout or product.selected_or_first_available_variant == nil %}disabled{% endif %}>
   <span>
     {% if current_tag == 'coming-soon' %}
@@ -44,6 +45,30 @@
     {% endif %}
             </span>
 </button>
+
+ {%else%}
+
+ <button class="add_cartretail button" click="{{ product-list-carousel }}" {% if current_tag == 'coming-soon' or product.selected_or_first_available_variant.available == false or quantity_rule_soldout or product.selected_or_first_available_variant == nil %}disabled{% endif %}>
+  <span>
+    {% if current_tag == 'coming-soon' %}
+      Coming Soon
+    {% else %}
+              {%- if product.selected_or_first_available_variant == nil -%}
+                {{ 'products.product.unavailable' | t }}
+              {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- else -%}
+                {{ 'products.product.add_to_cart' | t }}
+              {%- endif -%}
+    {% endif %}
+            </span>
+</button>
+
+
+{%endunless%} 
+
+
+
 {% comment %}{% unless is_retail %} {% endunless %} {% endcomment %}
 
 {% comment %} Default Shopify button - show only for RETAIL products 
