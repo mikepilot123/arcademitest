@@ -621,9 +621,6 @@ $(document).on("click",'.cart-drawer .close',function(){
 
 $(document).on("click", "button.add_cart", function() {
     var btn = $(this).attr('click'); // Ensure this attribute exists on the button
-
-    // STEP 1: Clear any retail products from cart immediately (for non-retail products)
-    clearRetailProductsFromCart();
   
     if (btn == 'true') {   
         var dt = new Date();
@@ -667,7 +664,9 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
             dataType: "JSON",
             success: function(result) {
                 updateCart(); 
-                $("body form.cart-add").remove(); 
+                $("body form.cart-add").remove();
+                // STEP 2: After adding non-retail product, clear any retail products
+                clearRetailProductsFromCart();
             } 
         });
     } else {  
@@ -705,7 +704,9 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
             data: formdata,
             dataType: "JSON",
             success: function(result) {
-                updateCart(); 
+                updateCart();
+                // STEP 2: After adding non-retail product, clear any retail products
+                clearRetailProductsFromCart();
             }
         });
     }
@@ -854,10 +855,7 @@ function clearNonRetailProductsFromCart() {
 }
 
 $(document).on("click", "button.add_cartretail", function() {
-  // STEP 1: Clear any non-retail products from cart immediately
-  clearNonRetailProductsFromCart();
-  
-  // STEP 2: Proceed with adding the retail product
+  // For retail products, get variant ID directly from button data attributes
   console.log("Adding retail product to cart...");
   $('body').addClass("js-drawer-open-right");
   var qty = 1;
@@ -946,6 +944,8 @@ $(document).on("click", "button.add_cartretail", function() {
     dataType: "json",
     success: function(result) {
       updateCart();
+      // STEP 2: After adding retail product, clear any non-retail products
+      clearNonRetailProductsFromCart();
     },
     error: function(xhr, status, error) {
       console.error("Error adding to cart:", error, xhr.responseText);
