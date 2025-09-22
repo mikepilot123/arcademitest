@@ -75,18 +75,63 @@ if (!customElements.get('product-form')) {
             this.error = false;
             const quickAddModal = this.closest('quick-add-modal');
             if (quickAddModal) {
+              const isRetailProduct = document.querySelector('.retail-product, .retail-products');
               document.body.addEventListener(
                 'modalClosed',
                 () => {
                   setTimeout(() => {
-                    this.cart.renderContents(response);
+                    if (isRetailProduct) {
+                      // For retail products, use the custom cart drawer
+                      document.body.classList.add("js-drawer-open-right");
+                      const priceSection = document.querySelector('.price-sec');
+                      const shippingSection = document.querySelector('.shipping');
+                      const emptySection = document.querySelector('.cart-drawer-empty');
+                      if (priceSection) priceSection.style.display = 'block';
+                      if (shippingSection) shippingSection.style.display = 'block';
+                      if (emptySection) emptySection.style.display = 'none';
+                      
+                      if (typeof updateCart === 'function') {
+                        updateCart();
+                      }
+                    } else {
+                      this.cart.renderContents(response);
+                    }
                   });
                 },
                 { once: true }
               );
               quickAddModal.hide(true);
             } else {
-              this.cart.renderContents(response);
+              // Check if this is a retail product
+              const isRetailProduct = document.querySelector('.retail-product, .retail-products');
+              if (isRetailProduct) {
+                // For retail products, use the custom cart drawer
+                document.body.classList.add("js-drawer-open-right");
+                // Show price section and hide empty state
+                const priceSection = document.querySelector('.price-sec');
+                const shippingSection = document.querySelector('.shipping');
+                const emptySection = document.querySelector('.cart-drawer-empty');
+                if (priceSection) priceSection.style.display = 'block';
+                if (shippingSection) shippingSection.style.display = 'block';
+                if (emptySection) emptySection.style.display = 'none';
+                
+                // Update cart contents if updateCart function exists
+                if (typeof updateCart === 'function') {
+                  updateCart();
+                } else {
+                  // Fallback: fetch cart data and update
+                  fetch('/cart.js')
+                    .then(response => response.json())
+                    .then(cartData => {
+                      // Trigger a custom event or directly update the cart UI
+                      const event = new CustomEvent('cartUpdated', { detail: cartData });
+                      document.dispatchEvent(event);
+                    });
+                }
+              } else {
+                // For non-retail products, use the standard cart drawer
+                this.cart.renderContents(response);
+              }
             }
           })
           .catch((e) => {
