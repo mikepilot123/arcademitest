@@ -639,4 +639,5 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
 
 $(document).on("click", "button.add_cartretail", function() {
   console.log("Clicking Michael");
+  $('body').addClass("js-drawer-open-right");
 });
