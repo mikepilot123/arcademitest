@@ -10,7 +10,7 @@
 {
   "sections": {
     "custom_header_fJinHi": {
-      "type": "custom-header",
+      "type": "header",
       "name": "Header Alternative",
       "settings": {
         "logo_position": "middle-left",
@@ -329,7 +329,7 @@
       }
     },
     "custom_footer_EVkC9F": {
-      "type": "custom-footer",
+      "type": "footer",
       "blocks": {
         "image_F8QeV3": {
           "type": "image",
