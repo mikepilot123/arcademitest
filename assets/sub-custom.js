@@ -74,6 +74,31 @@ $(document).on("click",".check .cartbuttonnew",function(){
      
 });
   
+// Helper function to force immediate price update
+function updateCartPrice() {
+  $.ajax({
+    url: '/cart.js',
+    type: 'GET',
+    dataType: 'JSON',
+    success: function(res) {
+      var finalprice = parseFloat(res['total_price']/100);
+      var finalprice = finalprice.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'); 
+      var finalprice = finalprice.replace(",",",");
+      
+      let curr = $('.disclosure__button.localization-form__select').data('curr');
+      
+      // Remove existing total price and add updated one
+      $(".cart-drawer .subtotal-sec .total-price").remove();
+      $(".cart-drawer .subtotal-sec").append("<div class='total-price'>"+curr+finalprice+"</div>");
+      
+      console.log('Price updated to:', curr+finalprice);
+    },
+    error: function() {
+      console.log('Error updating cart price');
+    }
+  });
+}
+
 function updateCart(){
 var currencySymbol = '';
 if (Shopify.currency && Shopify.currency.active) {
@@ -140,7 +165,8 @@ $(".cart_button_custom").addClass("redirecttocart");
      var finalprice=parseFloat(res['total_price']/100);
      var finalprice = finalprice.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'); 
      var finalprice = finalprice.replace(",",","); 
-     $(".subtotal-sec .total-price").remove();
+     // Remove existing total price (fix selector to match where it's added)
+     $(".cart-drawer .subtotal-sec .total-price").remove();
       
       
       var shipping_price= $(".shipping_custom_calculate").attr("qly_price");
@@ -162,6 +188,7 @@ $(".cart_button_custom").addClass("redirecttocart");
        }
       
       
+     // Add updated total price
      $(".cart-drawer .subtotal-sec").append("<div class='total-price'>"+curr+finalprice+"</div>");
      var itemcount=res['item_count'];
      
@@ -665,6 +692,8 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
             success: function(result) {
                 updateCart(); 
                 $("body form.cart-add").remove();
+                // Force immediate price update after adding item
+                updateCartPrice();
                 // STEP 2: After adding non-retail product, clear any retail products
                 clearRetailProductsFromCart();
             } 
@@ -705,6 +734,8 @@ var time = dt.getHours()+"_"+dt.getMinutes()+"_"+dt.getSeconds();
             dataType: "JSON",
             success: function(result) {
                 updateCart();
+                // Force immediate price update after adding item
+                updateCartPrice();
                 // STEP 2: After adding non-retail product, clear any retail products
                 clearRetailProductsFromCart();
             }
@@ -788,6 +819,8 @@ function clearRetailProductsFromCart() {
         })
         .then(response => {
           console.log('Server confirmed removal of retail products');
+          // Force immediate price update after server confirms removal
+          updateCartPrice();
         })
         .catch((error) => {
           console.error('Failed to remove retail products from server:', error);
@@ -878,6 +911,8 @@ function clearNonRetailProductsFromCart() {
         })
         .then(response => {
           console.log('Server confirmed removal of non-retail products');
+          // Force immediate price update after server confirms removal
+          updateCartPrice();
         })
         .catch((error) => {
           console.error('Failed to remove non-retail products from server:', error);
@@ -982,6 +1017,8 @@ $(document).on("click", "button.add_cartretail", function() {
     dataType: "json",
     success: function(result) {
       updateCart();
+      // Force immediate price update after adding retail item
+      updateCartPrice();
       // STEP 2: After adding retail product, clear any non-retail products
       clearNonRetailProductsFromCart();
     },
