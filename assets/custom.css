@@ -1640,6 +1640,8 @@ ul.custom-coll-list li.selected a {
 .customer .primary-button::before,
 button.add_cart.button::before,
 button.add_cart.button::after,
+button.add_cartretail.button::before,
+button.add_cartretail.button::after,
 button.product-form__submit.button::before,
 button.product-form__submit.button::after {
   content: unset;
@@ -1698,6 +1700,7 @@ button.product-form__submit.button::after {
   display: none;
 }
 button.add_cart.button,
+button.add_cartretail.button,
 button.product-form__submit.button {
   border-radius: 5px;
 }
