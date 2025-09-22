@@ -21,9 +21,16 @@ $(".close-btn, .bg-overlay").click(function(){
 
 $(document).on("click",".btn_wrap_login .cartbuttonnew",function(e) {
 e.preventDefault();
-// Show login modal for non-retail products (retail products don't show this button)
-console.log('Cart contains non-retail products - showing login modal');
-$(".account_pp .custom-model-main").addClass('model-open');
+
+// Check if cart contains only retail products
+if (window.cartIsRetailOnly) {
+  console.log('Cart contains only retail products - going directly to checkout');
+  window.location.href = "/checkout";
+} else {
+  // Show login modal for non-retail products
+  console.log('Cart contains non-retail products - showing login modal');
+  $(".account_pp .custom-model-main").addClass('model-open');
+}
 });
 
 
@@ -118,32 +125,18 @@ function updateCartRetailStatus() {
   });
 }
 
-// Helper function to handle checkout flow based on retail status
+// Helper function to ensure proper checkout button visibility
 function updateCheckoutButtonVisibility(cartIsRetailOnly) {
-  if (cartIsRetailOnly) {
-    // For retail products: Hide checkout button and auto-redirect to checkout
-    $('.check_btn_bottom .shipping').hide();
+  // Always show appropriate checkout button based on login status
+  // Button functionality will change based on cart contents (handled in click handler)
+  if (window.customerLoggedIn) {
+    $('.check_btn_bottom .shipping').show();
     $('.check_btn_bottom .btn_wrap_login').hide();
-    console.log('Cart contains only retail products - preparing auto-redirect to checkout');
-    
-    // Auto-redirect to checkout for retail products when cart drawer is open
-    if ($('body').hasClass('js-drawer-open-right')) {
-      console.log('Cart drawer is open with retail products - redirecting to checkout');
-      setTimeout(function() {
-        window.location.href = "/checkout";
-      }, 1000); // 1 second delay to let user see cart contents
-    }
+    console.log('Showing direct checkout button for logged-in customer');
   } else {
-    // Show appropriate button for non-retail products based on login status
-    if (window.customerLoggedIn) {
-      $('.check_btn_bottom .shipping').show();
-      $('.check_btn_bottom .btn_wrap_login').hide();
-      console.log('Showing direct checkout for logged-in customer with non-retail products');
-    } else {
-      $('.check_btn_bottom .shipping').hide();
-      $('.check_btn_bottom .btn_wrap_login').show();
-      console.log('Showing login modal for non-retail products');
-    }
+    $('.check_btn_bottom .shipping').hide();
+    $('.check_btn_bottom .btn_wrap_login').show();
+    console.log('Showing checkout button with dynamic functionality based on cart contents');
   }
 }
 
@@ -1104,14 +1097,6 @@ $(document).on("click", "button.add_cartretail", function() {
       updateCartRetailStatus();
       // STEP 2: After adding retail product, clear any non-retail products
       clearNonRetailProductsFromCart();
-      
-      // Check for immediate redirect to checkout for retail products
-      setTimeout(function() {
-        if (window.cartIsRetailOnly && $('body').hasClass('js-drawer-open-right')) {
-          console.log('Retail product added - redirecting to checkout');
-          window.location.href = "/checkout";
-        }
-      }, 1500); // Delay to allow cart clearing and UI updates
     },
     error: function(xhr, status, error) {
       console.error("Error adding to cart:", error, xhr.responseText);
