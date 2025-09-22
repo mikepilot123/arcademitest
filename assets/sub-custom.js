@@ -360,32 +360,52 @@ $(document).on("click", "button.plus_quantity", function(event) {
     
     var data_id = $(this).attr('data-id');
     var $button = $(this);
-     var $part = $button.closest('.part');
-     var prop = $part.attr('prop'); 
-   var qty = parseInt($(".cart__qty-input[data-id='"+data_id+"']").val()) + 1;
+    var $part = $button.closest('.part');
+    var prop = $part.attr('prop'); 
+    var qty = parseInt($(".cart__qty-input[data-id='"+data_id+"']").val()) + 1;
     var key = [];
-   $('.content-block .part[prop="' + prop + '"]').each(function() {
+    
+    $('.content-block .part[prop="' + prop + '"]').each(function() {
       var key1 = $(this).attr('key');      
-         key.push(key1); 
-
+      key.push(key1); 
     });
-   let updates = key.reduce((acc, id) => {
-  acc[id] = qty; 
-  return acc;
-}, {}); 
-  fetch(window.Shopify.routes.root + 'cart/update.js', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ updates })
-})
-.then(response => {
- updateCart(); 
-})
-.catch((error) => {
-  
-});
+    
+    // OPTIMISTIC UI UPDATE: Update quantity display immediately
+    console.log('Increasing quantity to', qty, 'immediately...');
+    $(".cart__qty-input[data-id='"+data_id+"']").val(qty);
+    
+    // Update cart count immediately (optimistic)
+    var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
+    var newCount = currentCount + 1;
+    $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
+    $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
+    $(".cart-count-bubble").show();
+    
+    // Build updates object for server sync
+    let updates = key.reduce((acc, id) => {
+      acc[id] = qty; 
+      return acc;
+    }, {}); 
+    
+    // Send request to server to sync the change
+    fetch(window.Shopify.routes.root + 'cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ updates })
+    })
+    .then(response => {
+      console.log('Server confirmed quantity increase');
+      // Update cart to get accurate totals
+      updateCart(); 
+    })
+    .catch((error) => {
+      console.error('Failed to update quantity on server:', error);
+      // Revert optimistic update on error
+      $(".cart__qty-input[data-id='"+data_id+"']").val(qty - 1);
+      updateCart();
+    });
   
      
 });
@@ -399,70 +419,133 @@ $(document).on("click", "button.plus_quantity", function(event) {
    
 /* Cart drawer minus quantity */
 $(document).on("click","button.minus_quantity",function(){
-event.preventDefault(); 
+    event.preventDefault(); 
     var data_id = $(this).attr('data-id');
     var $button = $(this);
-     var $part = $button.closest('.part');
-     var prop = $part.attr('prop'); 
-   var qty = parseInt($(".cart__qty-input[data-id='"+data_id+"']").val()) - 1;
+    var $part = $button.closest('.part');
+    var prop = $part.attr('prop'); 
+    var currentQty = parseInt($(".cart__qty-input[data-id='"+data_id+"']").val());
+    var qty = Math.max(0, currentQty - 1);
     var key = [];
-   $('.content-block .part[prop="' + prop + '"]').each(function() {
+    
+    $('.content-block .part[prop="' + prop + '"]').each(function() {
       var key1 = $(this).attr('key');      
-         key.push(key1); 
-
+      key.push(key1); 
     });
-   let updates = key.reduce((acc, id) => {
-  acc[id] = qty; 
-  return acc;
-}, {}); 
-  fetch(window.Shopify.routes.root + 'cart/update.js', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ updates })
-})
-.then(response => {
- updateCart(); 
-})
-.catch((error) => {
-  
+    
+    // OPTIMISTIC UI UPDATE: Update quantity display immediately
+    console.log('Decreasing quantity to', qty, 'immediately...');
+    $(".cart__qty-input[data-id='"+data_id+"']").val(qty);
+    
+    // Update cart count immediately (optimistic)
+    var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
+    var newCount = Math.max(0, currentCount - 1);
+    $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
+    $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
+    
+    // Hide cart count if empty
+    if (newCount === 0) {
+      $(".cart-count-bubble").hide();
+    }
+    
+    // If quantity becomes 0, remove the item from display
+    if (qty === 0) {
+      console.log('Quantity reached 0, removing item from display...');
+      $part.fadeOut(200, function() {
+        $(this).remove();
+      });
+    }
+    
+    // Build updates object for server sync
+    let updates = key.reduce((acc, id) => {
+      acc[id] = qty; 
+      return acc;
+    }, {}); 
+    
+    // Send request to server to sync the change
+    fetch(window.Shopify.routes.root + 'cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ updates })
+    })
+    .then(response => {
+      console.log('Server confirmed quantity decrease');
+      // Update cart to get accurate totals
+      updateCart(); 
+    })
+    .catch((error) => {
+      console.error('Failed to update quantity on server:', error);
+      // Revert optimistic update on error
+      $(".cart__qty-input[data-id='"+data_id+"']").val(currentQty);
+      if (qty === 0) {
+        // If we removed the item but server failed, we should restore it
+        updateCart();
+      }
+    });
 });
- });
   
   
 /* Cart drawer remove button */ 
 $(document).on("click", ".content-block .remove", function() {     
     var data_id = $(this).closest('.remove').attr('data-id');  
-     var $button = $(this);
-     var $part = $button.closest('.part');
-     var prop = $part.attr('prop'); 
+    var $button = $(this);
+    var $part = $button.closest('.part');
+    var prop = $part.attr('prop'); 
     var qty = 0;
-      var key = [];
-   // var var_id = [];
-    $('.content-block .part[prop="' + prop + '"]').each(function() {
+    var key = [];
+    
+    // Collect all parts with the same property (for grouped items)
+    var $partsToRemove = $('.content-block .part[prop="' + prop + '"]');
+    
+    $partsToRemove.each(function() {
       var key1 = $(this).attr('key');      
-         key.push(key1); 
-
+      key.push(key1); 
     });
+    
+    // OPTIMISTIC UI UPDATE: Remove items from display immediately
+    console.log('Removing items from cart display immediately...');
+    $partsToRemove.fadeOut(200, function() {
+      $(this).remove();
+    });
+    
+    // Update cart count immediately (optimistic)
+    var currentCount = parseInt($(".cart-count-bubble span[aria-hidden='true']").text()) || 0;
+    var newCount = Math.max(0, currentCount - $partsToRemove.length);
+    $(".cart-count-bubble span[aria-hidden='true']").text(newCount);
+    $(".cart-count-bubble span.visually-hidden").text("Cart (" + newCount + " items)");
+    
+    // Hide cart count if empty
+    if (newCount === 0) {
+      $(".cart-count-bubble").hide();
+    }
+    
+    // Build updates object for server sync
     let updates = key.reduce((acc, id) => {
-  acc[id] = 0; 
-  return acc;
-}, {});  
- 
- fetch(window.Shopify.routes.root + 'cart/update.js', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ updates })
-})
-.then(response => {
-updateCart(); 
-})
-.catch((error) => {
-  
-});  
+      acc[id] = 0; 
+      return acc;
+    }, {});  
+
+    // Send request to server to sync the change
+    fetch(window.Shopify.routes.root + 'cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ updates })
+    })
+    .then(response => {
+      console.log('Server confirmed item removal');
+      // Update cart to get accurate totals and counts
+      updateCart(); 
+    })
+    .catch((error) => {
+      console.error('Failed to remove item from server:', error);
+      // TODO: Could implement error recovery here
+      // For now, just update cart to get the correct state
+      updateCart();
+    });  
 
 });
 
