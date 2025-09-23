@@ -139,7 +139,9 @@
         "collapsible_tab_eXGeTD",
         "collapsible_tab_Fj43Dr"
       ],
-      "custom_css": [],
+      "custom_css": [
+        ".custom-product-images .product__media-item:nth-child(n + 4) {display: inline-block;}"
+      ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-3",
