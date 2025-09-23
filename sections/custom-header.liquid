@@ -34,8 +34,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    position: relative;
-    z-index: 10000; /* Above the overlay */
   }
 
   header-drawer .menu-drawer__navigation-container {
@@ -115,20 +113,7 @@
     margin-left: 0 !important;
   }
 
-  /* Remove conflicting overlay styles - we'll use the menu icon ::before for the overlay */
-
-  /* Menu icon expanded state overlay - positioned to cover full viewport */
-  .header__icon--menu[aria-expanded='true']::before {
-    content: '';
-    position: fixed; /* Fixed to viewport */
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw; /* Full viewport width */
-    display: block;
-    background: rgba(var(--color-foreground), 0.5);
-    z-index: 9999; /* Behind the menu-drawer__inner-container */
-  }
+  /* Overlay completely removed as requested */
 
   /* Fix menu icon display states */
   .header__icon--menu .icon {
@@ -178,13 +163,13 @@
     transform: scale(0.8) !important;
   }
 
-  /* Ensure the drawer appears above the overlay */
+  /* Menu drawer z-index simplified without overlay */
   header-drawer > details[open] > .menu-drawer {
-    z-index: 9998; /* Below overlay but positioned properly */
+    z-index: 10001;
   }
 
   #custom-menu-drawer {
-    z-index: 9998 !important; /* Below overlay but positioned properly */
+    z-index: 10001 !important; 
   }
 
   @media screen and (min-width: 750px) {
@@ -201,7 +186,7 @@
   /* Header icon that opens the drawer */
   .header__icon--menu {
     position: relative;
-    z-index: 10003; /* Above drawer to ensure close button is clickable */
+    z-index: 10002; /* Above drawer to ensure close button is clickable */
   }
 
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
