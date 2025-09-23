@@ -20,7 +20,7 @@
 <style>
   header-drawer {
     justify-self: start;
-    margin-left: -1.2rem;
+    margin-left: 0; /* Remove offset for perfect alignment */
   }
 
   /* Ensure custom header drawer utility links are always visible */
@@ -59,6 +59,25 @@
 
   #custom-menu-drawer {
     z-index: 10001 !important; /* Match the default drawer z-index */
+    left: 0 !important; /* Align to left edge */
+    margin-left: 0 !important; /* Remove any margin offset */
+    top: 100% !important; /* Position directly below header */
+  }
+
+  /* Fix drawer positioning to align perfectly */
+  header-drawer {
+    margin-left: 0 !important; /* Remove the default -1.2rem offset */
+  }
+
+  /* Ensure menu drawer container has no offset */
+  .menu-drawer-container {
+    margin-left: 0 !important;
+    left: 0 !important;
+  }
+
+  /* Fix the drawer wrapper positioning */
+  #Details-custom-menu-drawer-container {
+    margin-left: 0 !important;
   }
 
   header-drawer > details > summary::before,
