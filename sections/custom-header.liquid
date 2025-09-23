@@ -34,6 +34,8 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 10000; /* Above the overlay */
   }
 
   header-drawer .menu-drawer__navigation-container {
@@ -125,7 +127,7 @@
     width: 100vw; /* Full viewport width */
     display: block;
     background: rgba(var(--color-foreground), 0.5);
-    z-index: 10000; /* Behind the drawer */
+    z-index: 9999; /* Behind the menu-drawer__inner-container */
   }
 
   /* Fix menu icon display states */
@@ -178,11 +180,11 @@
 
   /* Ensure the drawer appears above the overlay */
   header-drawer > details[open] > .menu-drawer {
-    z-index: 10001;
+    z-index: 9998; /* Below overlay but positioned properly */
   }
 
   #custom-menu-drawer {
-    z-index: 10001 !important; /* Above overlay */
+    z-index: 9998 !important; /* Below overlay but positioned properly */
   }
 
   @media screen and (min-width: 750px) {
