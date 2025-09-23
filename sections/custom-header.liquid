@@ -51,6 +51,32 @@
     margin-top: auto;
   }
 
+  /* Fix z-index stacking for custom header drawer */
+  .menu-drawer-container {
+    position: relative;
+    z-index: 10003; /* Ensure drawer container is above page content */
+  }
+
+  #custom-menu-drawer {
+    z-index: 10001 !important; /* Match the default drawer z-index */
+  }
+
+  header-drawer > details > summary::before,
+  header-drawer > details[open]:not(.menu-opening) > summary::before {
+    z-index: 10002 !important; /* Overlay z-index */
+  }
+
+  /* Ensure sticky header doesn't interfere with drawer */
+  .shopify-section-header-sticky {
+    z-index: 10; /* Lower than drawer */
+  }
+
+  /* Header icon that opens the drawer */
+  .header__icon--menu {
+    position: relative;
+    z-index: 11; /* Above sticky header but below drawer */
+  }
+
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
     .scrolled-past-header .header__heading-logo-wrapper {
       width: 75%;
@@ -113,6 +139,7 @@
   .section-header {
     position: sticky;
     margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
+    z-index: 9; /* Ensure header stays below menu drawer */
   }
 
   @media screen and (min-width: 750px) {
