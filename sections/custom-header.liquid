@@ -128,6 +128,44 @@
     z-index: 300 !important;
   }
 
+  /* CRITICAL FIX: Ensure product media containers don't interfere with menu drawer */
+  .section-custom-header ~ main .product-media-container,
+  .section-custom-header ~ main .product-media-container.media-type-image.media-fit-contain.global-media-settings.gradient,
+  .section-custom-header ~ main .global-media-settings,
+  .section-custom-header ~ main .media-gallery,
+  .section-custom-header ~ main .product__media-list,
+  .section-custom-header ~ main .custom-product-images {
+    /* Ensure these elements have lower z-index than menu drawer */
+    z-index: auto !important;
+    /* Reset any isolation that might create stacking context issues */
+    isolation: auto !important;
+  }
+
+  /* Ensure product media containers don't create problematic stacking contexts */
+  .section-custom-header ~ main .product-media-container * {
+    z-index: auto !important;
+  }
+
+  /* Surgical fix: Only target properties that create stacking contexts without breaking visuals */
+  .section-custom-header ~ main .product-media-container:not(.menu-drawer):not(.menu-drawer *),
+  .section-custom-header ~ main .global-media-settings:not(.menu-drawer):not(.menu-drawer *) {
+    /* Only reset properties that specifically create stacking contexts */
+    isolation: auto !important;
+    /* Ensure these don't have conflicting z-index */
+    z-index: auto !important;
+  }
+
+  /* Force menu drawer to be above product content specifically */
+  .section-custom-header .menu-drawer,
+  .section-custom-header .menu-drawer-container,
+  .section-custom-header header-drawer,
+  .section-custom-header .menu-drawer > details > summary::before {
+    /* Use a z-index that's specifically higher than any product media */
+    z-index: 10001 !important;
+    /* Ensure we're positioned correctly */
+    position: relative !important;
+  }
+
   /* Cart drawer and notification - highest priority */
   cart-drawer,
   cart-notification,
