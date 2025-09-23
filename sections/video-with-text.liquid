@@ -1,0 +1,278 @@
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+<div class="video_with_text section-{{ section.id }}-padding" style="background-color: {{ section.settings.section_bg_color }};">
+  <div class="page-width">
+    <div class="video_with_text_row">
+      <div class="text_col col_6">
+         <div class="text_col_inner">
+            {% for block in section.blocks %}
+              {% case block.type %}
+                {% when 'heading' %}
+                  <div class="heading {{ block.settings.alignment }} heading_{{ forloop.index }}">
+                    <h2 class="plus-jakarta-sans">{{ block.settings.heading }}</h2>
+                  </div>
+                {% when 'description' %}
+                  {% if block.settings.text != blank %}
+                    <div class="text {{ block.settings.alignment }}">
+                      {{ block.settings.text }}
+                    </div>
+                  {% endif %}
+                  {% if block.settings.custom_richtext != blank %}
+                    <div class="custom_richtext {{ block.settings.alignment }}">
+                      {{ block.settings.custom_richtext }}
+                    </div>
+                  {% endif %}
+                
+                {% when 'button' %}
+                  <div class="button_box {{ block.settings.alignment }}">
+                    {% if block.settings.buttonimage_1 != blank %}
+                    <a class="global-button" href="{{block.settings.buttonlink_1}}" target="_blank">
+                      <img src="{{block.settings.buttonimage_1 | img_url: 'master'}}" height="" width="" loading="lazy"/>
+                      {% comment %}
+                      <div class="button-detail">
+                        <p>{{ block.settings.btn_subtext_1 }}</p>
+                        <h3>{{ block.settings.btn_text_1 }}</h3>
+                      </div>
+                      {% endcomment %}
+                    </a>
+                    {% endif %}
+                    {% if block.settings.buttonimage_2 != blank %}
+                    <a class="global-button" href="{{block.settings.buttonlink_2}}" target="_blank">
+                      <img src="{{block.settings.buttonimage_2 | img_url: 'master'}}" height="" width="" loading="lazy"/>
+                      {% comment %}
+                      <div class="button-detail">
+                        <p>{{ block.settings.btn_subtext_2 }}</p>
+                        <h3>{{ block.settings.btn_text_2 }}</h3>
+                      </div>
+                      {% endcomment %}
+                    </a>
+                    {% endif %}
+                    {% if block.settings.buttonimage_3 != blank %}
+                    <a class="global-button" href="{{block.settings.buttonlink_3}}" target="_blank">
+                      <img src="{{block.settings.buttonimage_3 | img_url: 'master'}}" height="" width="" loading="lazy"/>
+                      {% comment %}
+                      <div class="button-detail">
+                        <p>{{ block.settings.btn_subtext_3 }}</p>
+                        <h3>{{ block.settings.btn_text_3 }}</h3>
+                      </div>
+                      {% endcomment %}
+                    </a>
+                    {% endif %}
+                  </div>
+              {% endcase %}
+            {% endfor %}
+          </div>
+      </div>
+      <div class="video_col col_6">
+        <div class="video_box_inner">
+          {% if section.settings.video_link != blank %}
+            <video
+              id="rytmyVideo"
+              {% if section.settings.video_poster != blank %}
+                poster="{{section.settings.video_poster | img_url: 'master'}}"
+              {% endif %}
+              autoplay
+              playsinline
+              loop
+              muted
+              controls
+            >
+              <source src="{{section.settings.video_link }}" type="video/mp4">
+            </video>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% schema %}
+  {
+"name": "Video with text",
+"settings": [
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Background color"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster",
+      "label": "Video Poster"
+    },
+    {
+      "type": "textarea",
+      "id": "video_link",
+      "label": "Video Link"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+],
+    "blocks": [
+      {
+        "type": "heading",
+        "name": "Heading",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "textarea",
+            "id": "heading",
+            "label": "Heading Text"
+          },
+          {
+           "type": "select",
+           "id": "alignment",
+           "options": [
+              { "value": "left", "label": "Left"},
+              { "value": "center", "label": "Center"},
+              { "value": "right", "label": "Right"}
+           ],
+           "label": "Text alignment"
+         }
+        ]
+      },
+      {
+        "type": "description",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "textarea",
+            "id": "text",
+            "label": "Description Text"
+          },
+          {
+            "type": "richtext",
+            "id": "custom_richtext",
+            "label": "Text"
+          },
+          {
+           "type": "select",
+           "id": "alignment",
+           "options": [
+              { "value": "left", "label": "Left"},
+              { "value": "center", "label": "Center"},
+              { "value": "right", "label": "Right"}
+           ],
+           "label": "Text alignment"
+         }
+        ]
+      },
+      {
+        "type": "button",
+        "name": "Button",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "btn_subtext_1",
+            "label": "Button Sub Text"
+          },
+          {
+            "type": "text",
+            "id": "btn_text_1",
+            "label": "Button Heading"
+          },
+          {
+            "type": "url",
+            "id": "buttonlink_1",
+            "label": "Button Link"
+          },
+          {
+            "type": "image_picker",
+            "id": "buttonimage_1",
+            "label": "Button image"
+          },
+          {
+            "type": "text",
+            "id": "btn_subtext_2",
+            "label": "Button Sub Text"
+          },
+          {
+            "type": "text",
+            "id": "btn_text_2",
+            "label": "Button Heading"
+          },
+          {
+            "type": "url",
+            "id": "buttonlink_2",
+            "label": "Button Link"
+          },
+          {
+            "type": "image_picker",
+            "id": "buttonimage_2",
+            "label": "Button image"
+          },
+          {
+            "type": "text",
+            "id": "btn_subtext_3",
+            "label": "Button Sub Text"
+          },
+          {
+            "type": "text",
+            "id": "btn_text_3",
+            "label": "Button Heading"
+          },
+          {
+            "type": "url",
+            "id": "buttonlink_3",
+            "label": "Button Link"
+          },
+          {
+            "type": "image_picker",
+            "id": "buttonimage_3",
+            "label": "Button image"
+          },
+          {
+           "type": "select",
+           "id": "alignment",
+           "options": [
+              { "value": "left", "label": "Left"},
+              { "value": "center", "label": "Center"},
+              { "value": "right", "label": "Right"}
+           ],
+           "label": "Text Alignment"
+         }
+        ]
+      }
+      
+    ],
+  "presets": [
+      {
+        "name": "Video with text",
+        "category": "Video"
+      }
+    ]
+  }
+{% endschema %}

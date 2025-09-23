@@ -1,0 +1,170 @@
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+<div id="{{ section.settings.video_id }}" class="video_banner section-{{ section.id }}-padding">
+  <div
+    class="video_box"
+    {% if section.settings.video_width != blank %}
+      style="max-width: {{ section.settings.video_width }}; margin: {{ section.settings.video_alignment }}"
+    {% endif %}
+  >
+    <video
+      class="homepage-collection__video video_main video_controls"
+      controls
+      {% if section.settings.video_poster != blank %}
+        poster="{{section.settings.video_poster | img_url: 'master'}}"
+      {% endif %}
+      {% if section.settings.video_autoplay != blank %}
+        autoplay
+      {% endif %}
+      playsinline
+      {% if section.settings.video_loop != blank %}
+        loop
+      {% endif %}
+      {% if section.settings.video_mute != blank %}
+        muted
+      {% endif %}
+    >
+      <source src="{{section.settings.video_link}}" type="video/mp4">
+    </video>
+    <div class="video-button">
+      {{ section.settings.video_btn }}
+    </div>
+
+    <div class="play-button-wrapper">
+      <div title="Play video" class="play-gif" id="circle-play-b">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" preserveAspectRatio="xMidYMin slice">
+          <g fill="none" fill-rule="evenodd"><circle cx="18" cy="18" r="17" stroke="#fff" stroke-width="2"></circle><path fill="#fff" d="m23.935 17.708-10.313 6.033V11.676z"></path></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+   $(document).ready(function() {
+      $(".video_banner").each(function() {
+          var video = $(this).find("video.video_main")[0];
+          var playButton = $(this).find(".play-gif");
+          if (video && playButton.length) {
+              console.log("Video and play button found in this section");
+              playButton.on("click", function() {
+                  if (video.paused) {
+                      try {
+                          video.play();
+                          playButton.hide();
+                      } catch (error) {
+                          console.error("Playback failed", error);
+                      }
+                  }
+              });
+              video.onplay = function() {
+                  playButton.hide();
+              };
+              video.onpause = function() {
+                  playButton.show();
+              };
+              video.onended = function() {
+                  playButton.show();
+              };
+          } else {
+              console.log("Video or play button not found in this section");
+          }
+      });
+  });
+</script>
+{% schema %}
+{
+  "name": "video section",
+  "settings": [
+      {
+        "type": "text",
+        "id": "video_id",
+        "label": "Section Id"
+      },
+      {
+        "type": "image_picker",
+        "id": "video_poster",
+        "label": "Video Poster"
+      },
+      {
+        "type": "text",
+        "id": "video_link",
+        "label": "Video Link"
+      },
+      {
+        "type": "text",
+        "id": "video_width",
+        "label": "Video width",
+      },
+      {
+         "type": "select",
+         "id": "video_alignment",
+         "options": [
+            { "value": "0 auto 0 0", "label": "Left"},
+            { "value": "0 auto", "label": "Center"},
+            { "value": "0 0 0 auto", "label": "Right"}
+         ],
+         "label": "Video alignment"
+       },
+       {
+          "type": "checkbox",
+          "id": "video_autoplay",
+          "label": "Video autoplay",
+       },
+       {
+          "type": "checkbox",
+          "id": "video_loop",
+          "label": "Video loop",
+       },
+       {
+          "type": "checkbox",
+          "id": "video_mute",
+          "label": "Video mute",
+      },
+      {
+        "type": "text",
+        "id": "video_btn",
+        "label": "Poster Button Label"
+      },
+      {
+        "type": "header",
+        "content": "Section padding"
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Top padding",
+        "default": 36
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Bottom padding",
+        "default": 36
+      }
+  ],
+  "presets": [
+    {
+      "name": "video section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

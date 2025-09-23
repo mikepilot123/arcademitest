@@ -1,0 +1,744 @@
+<!-- Cart Drawer Html Start -->
+{%- comment -%}
+  Check if cart contains ONLY retail products
+  If cart has any non-retail products, require login
+  {%- endcomment -%}
+
+  {%- assign cart_is_retail_only = true -%}
+  {%- assign cart_has_items = false -%}
+
+  {%- for item in cart.items -%}
+    {%- assign cart_has_items = true -%}
+    {%- assign product_tags = item.product.tags | join: ',' | downcase -%}
+    {%- unless product_tags contains 'retail' -%}
+      {%- assign cart_is_retail_only = false -%}
+      {%- break -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
+  {%- comment -%}
+  If cart is empty, treat as non-retail (show login)
+  {%- endcomment -%}
+  {%- unless cart_has_items -%}
+    {%- assign cart_is_retail_only = false -%}
+  {%- endunless -%}
+
+<div class="cart-drawer"  cart_drawer_on="{{ section.settings.cartdrawer_true}}">
+  <div class="page-width">
+   <!-- Cart Drawer Top HTML Start-->
+   <div class="cart-drawer-sec">
+     <div class="top">
+      <div class="my">Your cart</div> 
+        <div class="this-close close">x</div>
+    
+      </div>
+      <div class="bottom">
+         
+       </div>
+  </div>
+    <!-- Cart Drawer Top HTML End -->
+    
+   <!-- Cart Drawer EMPTY HTMl Start-->
+    <div class="cart-drawer-empty" style="display:none;">
+      YOUR CART IS EMPTY. <a href="/collections"> Continue</a>
+    </div>
+    <!-- Cart Drawer EMPTY HTMl End-->
+    
+  <!-- Cart Drawer Bottom HTML Start -->
+  <div class="bottom-drawer">
+   <div class="price-sec" style="display:none;">
+    <!-- Cart Drawer Order Note Start -->
+        {% if section.settings.order_note_true %}
+       <div class="tax_section order_note">
+         <span class="note_open">Leave a note with your order</span>
+        <div class="oder_note_texarea" style="display:none;">
+         <textarea class="cart_note" value="" name="note"></textarea>
+         </div>
+      </div>
+      {% endif %}
+     <!-- Cart Drawer Order Note End -->
+     
+     <!-- Cart Drawer Shipping Calculating Start -->
+      {% if section.settings.ships_true %}
+      <div class="shipping_custom_calculate" qly_price="{{ section.settings.ships_value }}">
+      
+        Spends $<span class="custom_calculate"></span> more and receive Free shipping
+        <span class="progressbar"><span class="inner_progressbar"></span></span>
+        
+      </div>
+      
+        <div class="shipping_custom_calculate_less" style="display:none;">
+        Your order qualifies for Free Domestic Shipping!
+       </div>
+      {% endif %}
+     
+      <!-- Cart Drawer Shipping Calculating End -->
+     
+      <!-- Cart Drawer Tax Calculated Start -->
+         {% if section.settings.tax_true %}
+      <div class="tax_section">
+         <p> Tax:</p><span>Calculated at checkout</span>
+      </div>
+      {% endif %}
+      <!-- Cart Drawer Tax Calculated End -->
+     
+     <!-- Cart Drawer Shipping Calculated Start -->
+          {% if section.settings.shipping_true %}
+      <div class="tax_section">
+         <p> Shipping:</p><span>Calculated at checkout</span>
+      </div>
+      {% endif %}
+       <!-- Cart Drawer Shipping Calculated End -->
+      
+    <!-- Cart Drawer Subtotal Start -->
+    <div class="text">
+      <p> Subtotal:</p>
+    </div>
+    <div class="subtotal-sec">
+        </div>  
+      <!-- Cart Drawer Subtotal End -->
+     
+      </div>
+    
+      <!-- Cart Drawer CheckOut Button Start -->
+     <div class="check_btn_bottom">
+    {% comment %}
+      Always show CheckOut button, but functionality changes based on cart contents:
+      - Retail products: Direct to checkout
+      - Non-retail products: Show account modal (unless logged in)
+    {% endcomment %}
+    {% if customer %}
+    <div class="shipping" style="display:none;">
+      <div class="btn_wrap check">
+       <a class="cartbuttonnew" href="/checkout">CheckOut</a>
+      </div>
+   </div>
+    {% else %}    
+      <div class="btn_wrap_login">
+       <span class="cartbuttonnew">CheckOut</span>
+      </div> 
+    {% endif %}
+       <div class="btn_shop">
+       <a class="btn" href="/collections">Continue Shop</a>
+      </div> 
+    </div> 
+   
+     
+     <!-- Cart Drawer CheckOut Button End -->
+      
+ </div>
+  <!-- Cart Drawer Bottom HTML End -->
+    
+</div>
+</div>
+
+<!-- Cart Drawer Html End -->
+
+<style>
+.tax_section.order_note span.active:after {
+    content: " ";
+    border-top: 1px solid #000;
+    width: 12px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    height: 1px;
+}
+.tax_section.order_note .oder_note_texarea.active {
+    display: inline-block !important;
+    width: 100%;
+}
+.oder_note_texarea textarea.cart_note {
+    padding: 27px 10px;
+    outline: none;
+    box-shadow: none;
+    margin: 0 !important;
+}
+.tax_section.order_note span:after {
+    content: "+";
+    position: absolute;
+    right: 0;
+}
+.tax_section.order_note {
+    display: inline-block;
+    width: 100%;
+    position: relative;
+}
+.tax_section.order_note span {
+    text-align: left;
+    margin: 0 0 7px 0;
+    width: 100%;
+    position: relative;
+}
+
+.tax_section p {
+    display: inline-block;
+    text-align: left;
+    width: 10%;
+    font-weight: bold;
+    color: #000;
+    margin: 0;
+}
+.tax_section span {
+    display: inline-block;
+    text-align: right;
+    width: 90%;
+}
+span.progressbar {
+    background-color: #ededed;
+    height: 9px;
+    width: 100%;
+    display: inline-block;
+    border-radius: 30px;
+    position: relative;
+}
+span.progressbar span.inner_progressbar {
+    background-color: #ff6458;
+    height: 9px;
+    border-radius: 30px;
+    display: inline-block;
+    position: absolute;
+}
+  .shipping_custom_calculate_less {
+    font-size: 14px;
+}
+
+
+.content-block .content .title a {
+    text-decoration: none;
+}
+.site-header__cart-count span.new {
+    display: none;
+}
+.cart-drawer .cart-drawer-sec .quantitybox .rightnew {
+    display: inline-block;
+    text-align: right;
+    margin: 0 0 0 6px;
+}
+
+.js-drawer-open-right .cart-drawer .cart-drawer-empty a {
+   width: 100%;
+    display: inline-block;
+}
+.cart-drawer .cart-drawer-sec .top {
+    position: relative;
+     margin: 25px 0 35px 0;
+}
+.js-drawer-open-right .cart-drawer .close {
+    width: 49%;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+.num {
+    display: inline-block;
+}
+.mnts {
+    display: inline-block;
+}
+.cartbuttonnew,
+  .btn_shop a.btn{
+    width: 100%;
+    text-align: center;
+    max-width: 100%;
+    color: #fff;
+    display: block;
+    border: 0;
+    padding: 8px 20px;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.44px;
+    margin: 10px auto;
+    background: #ff6458;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+}
+  .btn_shop a.btn{
+        background: #1e2d40;
+  }
+.cart-drawer .page-width {
+    padding: 0 20px !important;
+    /* max-width: 100%; */
+    /* padding-bottom: 0; */
+    /* padding-right: 0; */
+    position: relative;
+    height: 100vh !important;
+    width: 100%;
+}
+.cart-drawer .cart-drawer-sec .vartitle {
+    font-size: 13px;
+    letter-spacing: 0.96px;
+    color: #000;
+    line-height: 1.2;
+}
+.cart-drawer .cart-drawer-sec .quantitybox {
+    display: inline-block;
+       margin: 0 0 10px 0;
+    width: 100%;
+}
+.cart-drawer .cart-drawer-sec .varintbox {
+    display:none;
+    width: 100%;
+}
+.cart-drawer .cart-drawer-sec .varintbox .vartitle_size {
+    display: inline-block;
+    width: 40%;
+    text-transform: capitalize;
+        font-size: 14px;
+    letter-spacing: 1.04px;
+}
+.cart-drawer .cart-drawer-sec .varintbox .vartitle {
+    display: inline-block;
+    text-align: right;
+    width: 60%;
+}
+
+  .cart-drawer .cart-drawer-sec .quantitybox span {
+    display: none;
+}
+.cart-drawer .cart-drawer-sec .quantitybox button {
+    border: 1px solid #000;
+}
+.cart-drawer-empty {
+    text-align: center;
+    /* padding: 200px 0px 0px 0px; */
+    font-size: 18px;
+    position: absolute;
+    top: 34%;
+    left: 0;
+    right: 0;
+    width: 92%;
+}
+.cart-drawer .cart-drawer-sec {
+    width: 100%;
+    height: 75vh;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.cart-drawer .bottom-drawer{    
+    position: relative;
+    width: 100%;
+    bottom: 0px;
+    left: 0;
+    padding: 0px;
+    background: #fff;
+  }
+.quantitybox .minus_quantity {
+    color: #000;
+    cursor: pointer;
+    border: 0;
+    height: 30px;
+    padding: 0 0 0 10px;
+    border-radius: 0;
+    box-shadow: none;
+    width: 30px;
+    outline: none;
+    background: transparent;
+    text-align: center;
+    font-size: 24px;
+    line-height: 6px;
+    vertical-align: top;
+    border-right: 0 !important;
+}
+.content-block .content .title, .content-block .content .title a {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a0a0a;
+      margin: 0;
+   letter-spacing: 0.96px;
+}
+.quantitybox .plus_quantity {
+    color: #000;
+    cursor: pointer;
+    border: 0;
+    height: 30px;
+    outline: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0 10px 0 0px;
+    width: 30px;
+    background: transparent;
+    text-align: center;
+    font-size: 16px;
+    line-height: 20px;
+    border-left: 0 !important;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+}
+  input[type=number] {
+  -moz-appearance: none;
+      -webkit-appearance: none;
+}
+.quantitybox input.cart__qty-input:hover {
+    -webkit-appearance: none !important;
+}
+ .quantitybox input.cart__qty-input {
+    width: 25px;
+    border: 1px solid #000;
+    margin: 0;
+    padding: 0px !important;
+    text-align: center;
+    border-radius: inherit;
+    height: 30px;
+    vertical-align: top;
+    border-left: 0;
+    border-right: 0;
+    font-size: 13px;
+    color: #000;
+    letter-spacing: 1.04px;
+    line-height: 1.1;
+}
+  .content-block .image img {
+    width: 100%;
+}
+.js-drawer-open-right .cart-drawer {
+    display: block;
+    right: 0;
+    transition: 1s;
+}
+.cart-drawer {
+    border-left: 1px solid #e6e6e6;
+    display: block;
+    padding: 0;
+    position: fixed;
+    top: 0;    
+    z-index: 1500;
+    right: -100%;
+    color: #333;
+    background-color: #fff;
+    width: 100%;
+    max-width: 380px;
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) 0.1s;
+    height: 100vh;
+    overflow: auto;
+
+}
+.cart-drawer .cart-drawer-sec {
+    width: 100%;
+}
+.js-drawer-open-right .cart-drawer .price-sec {
+    padding: 20px 20px 0 20px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-top: 1px solid #000;
+    max-width: 100%;
+    display: inline-block;
+    background: #fff;
+}
+.js-drawer-open-right .cart-drawer .text {
+    display: inline-block;
+    width: 49%;
+    float: none;
+    text-align: left;
+}
+.js-drawer-open-right .cart-drawer .text p {
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: 1.2px;
+    font-size: 15px;
+   
+}
+.cart-drawer .subtotal-sec {
+    padding: 0;
+    width: 49%;
+    text-align: right;
+    display: inline-block;
+}
+.cart-drawer .subtotal-sec .total-price {
+   display: inline-block;
+   font-size: 17px;
+   letter-spacing: 1.36px;
+}
+.js-drawer-open-right .cart-drawer .price-sec .chkedship {
+    font-size: 13px;
+    color: #707172;
+    font-weight: 400;
+}
+ .js-drawer-open-right .cart-drawer .price-sec .chkedship {
+    font-size: 13px;
+    color: #707172;
+    font-weight: 400;
+}
+.js-drawer-open-right .cart-drawer .price-sec textarea {
+    width: 100%;
+    border: 1px solid #000;
+    font-size: 13px;
+    margin-top: 15px;
+    font-weight: 400;
+}
+.cart-drawer .price-sec button.cartbutton {
+    background: #a21b25;
+    border: 0;
+    color: #fff;
+    letter-spacing: 0;
+    text-transform: none;
+    width: 100%;
+    max-width: 100%;
+    font-weight: 700;
+    padding: 15px 10px;
+    display: block;
+    margin: 17px auto auto;
+    font-size: 18px;
+}
+  .content-block .part {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    margin: 12px 0px;
+    font-weight: 400;
+}
+.content-block .image {
+    width: 45%;
+    display: inline-block;
+    vertical-align: top;
+    max-width: 165px;
+}
+.content-block .content {
+    width: 54%;
+    vertical-align: top;
+    display: inline-block;
+    padding-left: 30px;
+    display: inline-block;
+}
+
+.content-block .part .remove button {
+    color: #ff6458;
+    display: inline-block;
+    padding: 0;
+    font-size: 14px;
+    background: transparent;
+    text-decoration: underline;
+    text-align: left;
+    border: 0;
+    cursor: pointer;
+}
+
+.content-block .part .remove .price {
+    font-size: 15px;
+    display: none;
+    float: left;
+    vertical-align: top;
+    width: 90%;
+}
+.headerup .close {
+    text-align: center;
+    display: inline-block;
+    /* font-size: 10px; */
+    height: 21px;
+    cursor: pointer;
+}
+ .headerup p.h2 {
+    font-size: 18px;
+    width: 90%;
+    display: inline-block;
+    font-weight: 700;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+.headerup {
+     text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #dbdbdb;
+    padding: 10px 15px;
+    margin-bottom: 0;
+    line-height: 1.5;
+    text-transform: unset;
+   
+    background-color: #f7f7f7;
+    color: #535353;
+}
+.js-drawer-open-right.cash button.cartbutton {
+    display: none;
+}
+.js-drawer-open-right.cash .emptydata {
+    display: inline-block !important;
+    text-align: center;
+    width: 100%;
+    font-size: 22px;
+   font-weight: 700;
+    padding: 40px 0px;
+}
+.shp_lnk {
+    text-align: center;
+}
+ .cart-drawer .cart-drawer-sec .close svg.icon.icon-close {
+    height: 15px;
+    width: 15px;
+}
+.cart-drawer .cart-drawer-sec .my {
+    display: inline-block;
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+    color: #000;
+    line-height: 1.2;
+}
+.cart-drawer .cart-drawer-sec .close {
+    display: inline-block !important;
+    text-align: right;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 16px;
+}
+.btn_wrap {
+  padding:0px;
+       display: inline-block;
+   width:100%;
+}
+.js-drawer-open-right .cart-drawer .cart-drawer-empty {
+    width: 100%;
+}
+.js-drawer-open-right .cart-drawer .cart-drawer-empty a {
+    margin-top: 20px !important;
+}
+.js-drawer-open-right .cart-drawer .btn_wrap .close a,
+  .js-drawer-open-right .cart-drawer .cart-drawer-empty a{
+    width: 100%;
+    padding: 9px;
+    border: solid 1px #000;
+    font-size: 12px;
+    color: #000;
+    font-weight: 700;
+    letter-spacing: 1.44px;
+    max-width: 340px;
+    margin: 0 auto;
+    text-transform: uppercase;
+    display: block;
+}
+.js-drawer-open-right .cart-drawer .btn_wrap .close {
+    display: block;
+    width: 100%;
+}
+.cart-drawer .cart-drawer-sec .price {
+    font-size: 14px;
+    letter-spacing: 0.96px;
+    margin: 0 8px 5px 0px;
+    line-height: 1.2;
+    display: inline-block;
+}
+  .price.discount {
+    display: none;
+}
+@media only screen and (max-width:749px) {
+.cart-drawer .cart-drawer-sec .top {
+    margin: 15px 0 10px 0;
+}
+.content-block .content {
+   padding-left: 10px;
+}
+.cart-drawer .cart-drawer-sec .varintbox .vartitle_size {
+    width: 30%;
+}
+.cart-drawer .cart-drawer-sec .varintbox .vartitle {
+    width: 70%;
+}
+.js-drawer-open-right .cart-drawer .price-sec p.shipping-info {
+    font-size: 14px;
+}
+
+.cart-drawer .cart-drawer-sec .bottom {
+    overflow-y: scroll;
+    margin-bottom: 20px;
+}
+.content-block .part .remove {
+   right: 30px;
+    bottom: 18px;
+} 
+}
+  
+@media only screen and (max-width:480px) {
+.cartbuttonnew,
+.js-drawer-open-right .cart-drawer .btn_wrap .close a{
+    max-width: 240px;
+}
+ 
+}
+
+  </style>
+
+  <script>
+    window.cartIsRetailOnly = {{ cart_is_retail_only | json }};
+    window.customerLoggedIn = {{ customer | json }} !== null;
+  </script>
+
+{% schema %}
+{
+  "name": "Cart Drawer",
+  
+  "settings": [
+{
+      "type": "header",
+      "content": "Cart Type"
+    },
+     {
+      "type": "checkbox",
+      "id": "cartdrawer_true",
+     "label": "Cart Drawer",
+      "default": true
+     
+    },
+{
+      "type": "header",
+      "content": "Show cart note box"
+    },
+     {
+      "type": "checkbox",
+      "id": "order_note_true",
+      "label": "Allows customers to leave a note on their order.",
+     "default": true
+    },
+{
+      "type": "header",
+      "content": "Show shipping note"
+    },
+     {
+      "type": "checkbox",
+      "id": "shipping_true",
+      "label": "Shows a note that shipping is calculated at checkout",
+     "default": true
+    },
+  
+   {
+      "type": "header",
+      "content": "Show tax note"
+    },
+     {
+      "type": "checkbox",
+      "id": "tax_true",
+      "label": "Shows a note that tax is calculated at checkout",
+     "default": true
+    },
+    
+    {
+      "type": "header",
+      "content": "Shipping"
+    },
+   {
+      "type": "checkbox",
+      "id": "ships_true",
+    "label": "Show free shipping countdown",
+     "default": true
+    },
+    {
+      "type": "text",
+      "id": "ships_value",
+    "label": "Qualifying price for free shipping"
+    }
+    
+  ]
+}
+{% endschema %}
+
+ 

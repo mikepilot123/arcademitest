@@ -1,0 +1,42 @@
+<section class="custom-instruction">
+  <div class="page-width">
+    <div class="inner-box">
+      <div class="top-header">
+        <p class="desc text-center f-18 plus-jakarta-sans">{{ section.settings.desc }}</p>
+      </div>
+      <div class="instruction-image text-center">
+        <a href="{{ section.settings.pdf_url }}" download target="_blank">
+          <img src="{{ section.settings.pdf_img | img_url: 'master' }}" class="cstm-img" width="" height="" loading="lazy"/>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+  {
+    "name": "Instruction",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "desc",
+        "label": "Description"
+      },
+      {
+        "type": "image_picker",
+        "id": "pdf_img",
+        "label": "Choose Image"
+      },
+      {
+        "type": "url",
+        "id": "pdf_url",
+        "label": "paste url here"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Instruction",
+        "category": "custom"
+      }
+    ]
+  }
+{% endschema %}

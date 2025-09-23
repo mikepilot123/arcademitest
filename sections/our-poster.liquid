@@ -1,0 +1,126 @@
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    overflow: hidden;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+<div class="custom-you-may-like section-{{ section.id }}-padding {{ section.settings.custom_class }}" style="background-color: {{ section.settings.section_bg_color }};" id="our_poster">
+  <div class="page-width">
+  <div class="you-may-like_wrapper">
+    <div class="you-may-like-header text-center">
+      {% if section.settings.title != blank %}
+      <h2 class="left">{{ section.settings.title }}</h2>
+      {% endif %}
+      {% if section.settings.subtitle != blank %}
+      <p>{{ section.settings.subtitle }}</p>
+      {% endif %}
+      <div class="slick-slider-nav"></div>
+    </div>
+    <div class="you-may-like-slider">
+    {% for product in section.settings.productslist %}
+      <div class="product_col">
+        <div class="product_box">
+          <a href="{{ product.url }}">
+            <div class="product_image">
+              <div class="product_custom_images d-none">
+                {% for media in product.images %}
+                      <span class="d-none" data-alt="{{ media.alt }}" data-src="{{ media | img_url: 'master' }}"></span>
+                  {% endfor %}
+              </div>
+            <img src="{{ product.featured_image | img_url: 'master' }}" alt="{{ product.title }}" class="home-product-image" height="" width="" loading="lazy">
+            </div>
+            <div class="product_meta">
+              {% if section.settings.showtitle != blank %}
+              <h4 class="you-may-like-price">{{ product.title }}</h4>
+              {% endif %}
+              {% if section.settings.showprice != blank %}
+              <p class="you-may-like-price">{{ product.price | money }}</p>
+              {% endif %}
+            </div>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+      </div>
+  </div>
+</div>
+</div>
+{% schema %}
+{
+"name": "our posters",
+"settings": [
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Add class"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Background color"
+    },
+    {
+      "type": "text",
+      "id": "title", 
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Sub heading"
+    },
+    {
+      "type": "product_list",
+      "id": "productslist",
+      "label": "Products"
+    },
+    {
+      "type": "checkbox",
+      "id": "showtitle",
+      "label": "Show title"
+    },
+    {
+      "type": "checkbox",
+      "id": "showprice",
+      "label": "Show price"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+],
+  "presets": [
+      {
+        "name": "our posters",
+        "category": "custom"
+      }
+    ]
+  }
+{% endschema %}

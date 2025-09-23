@@ -1,0 +1,195 @@
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    overflow: hidden;
+  }
+  .section-{{ section.id }}-padding .marquee--reverse .marquee__content {
+    animation-direction: reverse;
+  }
+  .section-{{ section.id }}-padding .marquee--hover-pause:hover .marquee__content {
+    animation-play-state: paused;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+<section class="sliding_animation_wrap section-{{ section.id }}-padding" style="background-color: {{ section.settings.section_bg_color }};">
+  <div class="page-width">
+    <div class="sliding_animation_header">
+      {% if section.settings.title != blank %}
+      <h2 class="left">{{ section.settings.title }}</h2>
+      {% endif %}
+    </div>
+  </div>
+  <div class="desktop">
+{% assign file = product.metafields.custom.image_slide_sec1.value %}
+ {% if product.metafields.custom.image_slide_sec1.value != blank %}
+      <div class="marquee {% if section.settings.marqueehoverpause %} marquee--hover-pause{% endif %}">
+    <ul class="marquee__content">
+{% for image in product.metafields.custom.image_slide_sec1.value %}
+        <li>
+          <a href="{{ block.settings.icon_img_link }}">
+           
+              <img src="{{ image | img_url: 'master' }}" alt="image" width="" height="" loading="lazy">
+           
+         </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <ul aria-hidden="true" class="marquee__content">
+  {% for image in product.metafields.custom.image_slide_sec1.value %}
+        <li>
+          <a href="{{ block.settings.icon_img_link }}">
+           
+              <img src="{{ image | img_url: 'master' }}" alt="image" width="" height="" loading="lazy">
+        
+        </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {% endif %}
+   {% if product.metafields.custom.image_slide_sec2.value != blank %}
+  <div class="marquee marquee--reverse{% if section.settings.marqueehoverpause %} marquee--hover-pause{% endif %}">
+    <ul class="marquee__content">
+{% for image in product.metafields.custom.image_slide_sec2.value %}
+        <li>
+          <a href="{{ block.settings.icon_img_link }}">
+           
+              <img src="{{ image | img_url: 'master' }}" alt="image" width="" height="" loading="lazy">
+           
+         </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <ul aria-hidden="true" class="marquee__content">
+  {% for image in product.metafields.custom.image_slide_sec2.value %}
+        <li>
+          <a href="{{ block.settings.icon_img_link }}">
+           
+              <img src="{{ image | img_url: 'master' }}" alt="image" width="" height="" loading="lazy">
+        
+        </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+ </div>
+
+
+  <div class="mobile" style="display: none">
+{% assign file = product.metafields.custom.image_slide_sec1.value %}
+ {% if product.metafields.custom.image_slide_sec1.value != blank %}
+      <div class="marquee {% if section.settings.marqueehoverpause %} marquee--hover-pause{% endif %}">
+    <ul class="marquee__content slider-one">
+{% for image in product.metafields.custom.image_slide_sec1.value %}
+        <li>
+          <a href="{{ block.settings.icon_img_link }}">
+              <img src="{{ image | img_url: 'master' }}" alt="image" width="" height="" >
+         </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+   
+  </div>
+
+  {% endif %}
+   {% if product.metafields.custom.image_slide_sec2.value != blank %}
+  <div class="marquee marquee--reverse{% if section.settings.marqueehoverpause %} marquee--hover-pause{% endif %}">
+    <ul class="marquee__content slider-two" dir="rtl">
+{% for image in product.metafields.custom.image_slide_sec2.value %}
+        <li>
+          <a href="{{ block.settings.icon_img_link }}">           
+              <img src="{{ image | img_url: 'master' }}" alt="image" width="" height="" >
+         </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+    </div>
+</section>
+{% schema %}
+   {
+"name": "Sliding images meta",
+"settings": [
+  {
+    "type": "color",
+    "id": "section_bg_color",
+    "label": "Background color"
+  },
+  {
+    "type": "text",
+    "id": "title", 
+    "label": "Heading"
+  },
+  {
+    "type": "checkbox",
+    "id": "reversedirection",
+    "label": "Reverse direction"
+  },
+  {
+    "type": "checkbox",
+    "id": "marqueehoverpause",
+    "label": "marquee hover pause"
+  },
+  {
+    "type": "header",
+    "content": "Section padding"
+  },
+  {
+    "type": "range",
+    "id": "padding_top",
+    "min": 0,
+    "max": 100,
+    "step": 4,
+    "unit": "px",
+    "label": "Top padding",
+    "default": 0
+  },
+  {
+    "type": "range",
+    "id": "padding_bottom",
+    "min": 0,
+    "max": 100,
+    "step": 4,
+    "unit": "px",
+    "label": "Bottom padding",
+    "default": 0
+  }
+],
+"blocks": [
+  {
+  "type": "Image",
+  "name": "Image",
+  "settings": [
+		{
+          "type": "image_picker",
+          "id": "icon_img",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "icon_img_link",
+          "label": "Url"
+        }
+      ]
+    }
+  ],
+"presets": [
+ {
+   "name": "Sliding images meta",
+   "category": "Home"
+ }
+]
+}
+{% endschema %}

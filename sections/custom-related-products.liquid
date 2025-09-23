@@ -1,0 +1,118 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px !important;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px !important;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px !important;
+      padding-bottom: {{ section.settings.padding_bottom }}px !important;
+    }
+  }
+{%- endstyle -%}
+{% for collection in product.collections %}
+  {% assign custom_coll = collection %}
+{% endfor %}
+<section class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding custom-related-products">
+  <div class="page-width">
+    <div class="inner-container">
+      <div class="top-header">
+        <h2 class="f-700 text-center related-products__heading inline-richtext h0">
+          {{ section.settings.title }}
+        </h2>
+      </div>
+      <div class="custom-items">
+        {% for custom_product in custom_coll.products limit: 5 %}
+          {% unless custom_product.title == product.title %}
+            <div class="items">
+              <div class="product-images">
+                <a href="{{ custom_product.url }}"
+                  ><img
+                    src="{{ custom_product.featured_image | img_url: 'master' }}"
+                    height=""
+                    width=""
+                    loading="lazy"
+                    class="cstm-img"
+                ></a>
+                <div class="card__badge {{ settings.badge_position }}">
+                  {%- if custom_product.available == false -%}
+                    <span
+                      id="NoMediaStandardBadge-{{ section_id }}-{{ custom_product.id }}"
+                      class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+                    >
+                      {{- 'products.product.sold_out' | t -}}
+                    </span>
+                  {%- elsif custom_product.compare_at_price > custom_product.price and custom_product.available -%}
+                    <span
+                      id="NoMediaStandardBadge-{{ section_id }}-{{ custom_product.id }}"
+                      class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
+                    >
+                      {{- 'products.product.on_sale' | t -}}
+                    </span>
+                  {%- endif -%}
+                </div>
+              </div>
+              <div class="product-detail">
+                <a href="{{ custom_product.url }}">
+                  <h2 class="clr-white f-18 f-600">{{ custom_product.title }}</h2>
+                </a>
+                <p class="clr-white f-14 f-600">
+                  {% if request.path contains 'poster' %} {% else %}From {% endif %}
+                  {{ custom_product.selected_or_first_available_variant.price | money }}{% unless custom_product.tags contains 'retail' %} Ex. VAT{% endunless %} 
+                </p>
+              </div>
+            </div>
+          {% endunless %}
+        {% endfor %}
+      </div>
+      <div class="quote-slider-nav custom"></div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Custom Related Products",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+
+  ],
+  "presets": [
+    {
+      "name": "Custom Related Products",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

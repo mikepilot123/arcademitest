@@ -1,0 +1,110 @@
+ {%- capture product-list-carousel -%}
+{%- for list_product_carousel in settings.subscription-list -%}
+            {%- if product.handle contains list_product_carousel.handle -%}
+                  true
+            {%- endif -%}
+          {%- endfor -%}
+      {%- endcapture -%}
+      {% if product-list-carousel == 'true' %}
+<div class="sub_custom_widget 77777777">
+  {% assign customproduct = product.metafields.custom.add_product_custom.value %}
+  <div class="one_time cms_box" custom_id="{{ customproduct.variants.first.id }}" meta_tax="{{ customproduct.metafields.custom.tax_product.value }}">
+   <div class="flx">
+     <div class="contant_div f-600">
+    <input type="checkbox" class="one_tt" name="purchase_option" id="one" >
+    Flashcards & Wallets
+     </div>
+     <span meta_pr="{{ customproduct.price }}"  class="price_pr f-14">{{ customproduct.price | money }}{% unless product.tags contains 'retail' %}  Ex. VAT{% endunless %}</span>
+   </div>
+   {{ block.settings.fst_txt }}
+   
+  </div>
+  <div class="subscription cms_box">
+    <div class="sell_div" style="display:none;" product_id="{{ product.id }}" meta_tax="{{ product.metafields.custom.tax_product.value }}">
+      
+      {% for variant in product.variants %}
+   {% for group in product.selling_plan_groups %}    
+        {% for selling_plan in group.selling_plans %}          
+           {% for sell_val in selling_plan.price_adjustments  %}         
+              {% for allocation in variant.selling_plan_allocations %}
+             <span var_id="{{ variant.id }}" sell_id="{{ selling_plan.id }}" hhh="{{ selling_plan.name }}"></span>
+              {%- capture sub_price -%}
+                {{ allocation.price  }}
+                {%- endcapture %}
+                {% endfor %}
+             {% endfor %}
+          {% endfor %}
+
+    {% endfor %}
+{% endfor %}
+      </div>
+<div class="flx">
+     <div class="contant_div f-600">
+    <input type="checkbox" class="sub_tt" name="purchase_option" id="sub">
+    Augmented Reality Subscription
+     </div>
+  <span class="price_pr  f-14"><span class="main_pr f-14" style="display:none;">{{ product.price | money }}  </span><span cart_cur="{{ cart.currency.symbol }}" sub_price="{{ sub_price }}" class="sub_pr f-14">{{ sub_price | money }}</span>{% unless product.tags contains 'retail' %} Ex. VAT{% endunless %}</span>
+</div>
+      {{ block.settings.second_txt }}
+   
+     
+  </div>
+</div>
+{% endif %}
+
+{% comment %}
+{% for variant in product.variants %}
+   {% for group in product.selling_plan_groups %}    
+        {% for selling_plan in group.selling_plans %}
+          1 {{ selling_plan.id }}<br>
+          2 {{ selling_plan.name }}<br>
+           {% for sell_val in selling_plan.price_adjustments  %}          
+          3 {{ sell_val.value }}<br>
+              {% for allocation in variant.selling_plan_allocations %}
+             4 {{ allocation.price }}
+                {% endfor %}
+             {% endfor %}
+          {% endfor %}
+
+    {% endfor %}
+{% endfor %}
+{% endcomment %}
+
+<style>
+  .sub_custom_widget .one_time,
+  .sub_custom_widget .subscription{
+     margin-bottom: 20px;
+    padding: 15px 15px;
+    cursor: pointer;
+    background: #fff;
+    color: #000;
+    border-radius: 10px;
+}
+  .sealsubs-target-element {
+    display: none;
+}
+  .sub_custom_widget .cms_box input {
+    pointer-events: none;
+    border-radius: 16px;
+    width: 1.3em;
+    height: 1.3em;
+    background-color: white;
+    border-radius: 50%;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+}
+  .sub_custom_widget .cms_box input:checked {
+    background: #1e2d40;
+}
+  .sub_custom_widget .flx {
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+}
+  span.price_pr span.main_pr {
+    text-decoration: line-through;
+}
+</style>

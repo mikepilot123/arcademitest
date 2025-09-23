@@ -1,0 +1,60 @@
+<section class="custom-parent-letters">
+  <div class="page-width">
+    <div class="inner-box">
+      <div class="top-header">
+        <p class="desc text-center f-18 plus-jakarta-sans">{{ section.settings.desc }}</p>
+      </div>
+      <div class="parent-image text-center">
+        {% for block in section.blocks %}
+          <div class="item">
+            <a href="{{ block.settings.pdf_url }}" download target="_blank">
+              <img src="{{ block.settings.pdf_img | img_url: 'master' }}" class="cstm-img" width="" height="" loading="lazy"/>
+            </a>
+            <h2 class="hdng text-center f-24 f-600 clr_orng">{{ block.settings.pdf_hdng }}</h2>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+  {
+    "name": "Parent Letters",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "desc",
+        "label": "Description"
+      },
+    ],
+    "blocks": [
+      {
+        "type": "pdf",
+        "name": "pdf",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "pdf_img",
+            "label": "Choose Image"
+          },
+          {
+            "type": "url",
+            "id": "pdf_url",
+            "label": "paste url here"
+          },
+          {
+            "type": "text",
+            "id": "pdf_hdng",
+            "label": "Heading"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Pattern Letters",
+        "category": "custom"
+      }
+    ]
+  }
+{% endschema %}

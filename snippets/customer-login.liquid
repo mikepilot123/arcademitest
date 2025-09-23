@@ -1,0 +1,416 @@
+<div class="account_pp">
+<div class="custom-model-main">
+    <div class="custom-model-inner">        
+    <div class="close-btn">×</div>
+        <div class="custom-model-wrap">
+          <div class="pop-up-content-wrap">
+              <form id="createCustomerForm" action="/account" method="post">
+                <p class="heading_txt">Please complete this step before proceeding to the checkout</p>
+                <input type="hidden" name="form_type" value="create_customer">
+                <input type="hidden" name="utf8" value="✓">
+                
+                <label for="firstName">First Name</label>
+                <input type="text" name="customer[first_name]" id="firstName" required>
+                
+                <label for="lastName">Last Name</label>
+                <input type="text" name="customer[last_name]" id="lastName" required>
+                
+                <label for="email">Email</label>
+                <input type="email" name="customer[email]" id="email" required>
+                        
+                 <label for="schoolName">School Name</label>
+               <input type="text" id="purchaselocation" name="customer[note][School Name]" >
+                <div class="form-group main_pp">      
+                <label for="password">Password</label>
+                <input type="password" name="customer[password]" id="password" required>
+                <i class="toggle-password fa fa-fw fa-eye-slash"></i>
+                </div>   
+                <div class="form-group remove_pp">      
+                <label for="password">Confirm Password</label>
+                <input type="password" name="customer[password]" id="password" required>
+                <i class="toggle-password fa fa-fw fa-eye-slash"></i>
+                  <p class="rong_password" style="color:red; margin:0px; display:none;">password doesn't match</p>
+                </div>
+                <button style="display:block;" class="submit_btn" type="submit">Create Account</button>
+                <span class="login_btn">Login</span>
+              </form>
+              <!-------------- login form ----------------->
+              <form id="loginForm" action="/login" method="post" style="display:none;">
+                 <p class="heading_txt">Please complete this step before proceeding to the checkout</p>
+                <label for="email">Email</label>
+                <input type="email" name="customer[email]" id="email" required>
+                
+                <div class="form-group"> 
+                <label for="password">Password <span class="forget_password_btn">Forgot Password?</span></label>
+                <input type="password" name="customer[password]" id="password" required>
+                <i class="toggle-password fa fa-fw fa-eye-slash"></i>
+                </div>
+                <button type="submit" class="login_btn">Login</button>
+                <span class="register_btn">Create Account</span>
+              </form>
+
+
+
+            
+              <!-------------- forget Password form ----------------->
+             {%- form 'recover_customer_password', id: 'forget_password' -%}
+     
+               
+      <div class="field-block">
+         <p class="heading_txt">We will send you an email to reset your password</p>
+         <label for="RecoverEmail">
+          {{ 'customer.login_page.email' | t }}
+        </label>
+        <input
+          type="email"
+          value=""
+          name="email"
+          id="RecoverEmail"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          {% if form.errors %}
+            aria-invalid="true"
+            aria-describedby="RecoverEmail-email-error"
+            autofocus
+          {% endif %}
+          placeholder="{{ 'customer.login_page.email' | t }}"
+        >
+       
+      </div>
+     
+
+      <button class="login-btn primary-button submit_btn">
+        {{ 'customer.login_page.submit' | t }}
+      </button>
+
+      <a href="#login" class="cancel_forget_password">
+        {{ 'customer.login_page.cancel' | t }}
+      </a>
+    {%- endform -%}
+
+              
+              <!-- <form method="post" action="/account/recover" id="forget_password" style="display: none;">
+              <p class="heading_txt">We will send you an email to reset your password</p>
+                
+              <label for="email">Email</label>
+              <input type="email" name="recover[email]" id="RecoverEmail" required>
+              <button class="login-btn primary-button submit_btn">
+                {{ 'customer.login_page.submit' | t }}
+              </button>
+              <a href="#login" class="cancel_forget_password">
+                {{ 'customer.login_page.cancel' | t }}
+              </a>
+            </form> -->
+          </div>
+        </div>  
+    </div>  
+    <div class="bg-overlay"></div>
+</div> 
+</div>
+<style>
+ #loginForm .remember-me {
+      margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+#loginForm .remember-me input {
+  margin-left: 5px;
+  height: 20px;
+  width: 20px;
+}
+  form#forget_password {
+    display: none;
+}
+  #loginForm label[for="password"] {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0px;
+}
+ #loginForm label span.forget_password_btn {
+    cursor: pointer;
+}
+ form#forget_password .cancel_forget_password{
+    display: block;
+    text-align: center;
+    color: #1e2d40;
+    text-decoration: none;
+    margin-top: 20px;
+    font-weight: 600;
+  }
+ .toggle-password, .confirm-toggle-password {
+    float: right;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: -30px;
+    position: relative;
+}
+  .toggle-password.fa-eye::before, .confirm-toggle-password.fa-eye::before {
+    content: url('https://cdn.shopify.com/s/files/1/0835/6623/1880/files/view.png?v=1726470769');
+}
+  .toggle-password.fa-eye-slash::before, .confirm-toggle-password.fa-eye-slash::before {
+    content: url('https://cdn.shopify.com/s/files/1/0835/6623/1880/files/hide.png?v=1726470768');
+}
+ .account_pp .pop-up-content-wrap label {
+    display: block;
+    color: #000;
+    font-weight: 700;
+}
+
+ .account_pp .pop-up-content-wrap input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+ .account_pp button.submit_btn,
+ .account_pp button.login_btn{
+       text-align: center;
+    display: block;
+    width: 100%;
+    margin: 10px 0 0 0;
+    padding: 14px 10px;
+    background: #1e2d40;
+    color: #fff;
+    text-transform: uppercase;
+    border: unset;
+    border-radius: 7px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+ .account_pp span.login_btn,
+  .account_pp span.register_btn{
+       text-align: center;
+    display: block;
+    cursor: pointer;
+    background: #ed8731;
+    margin-top: 10px;
+    padding: 5px 0;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 7px;
+}
+
+.heading_txt{
+    color: #000;
+    font-weight: 600;
+}
+
+  
+  .account_pp .custom-model-main {
+  text-align: center;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0; /* z-index: 1050; */
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+  opacity: 0;
+  -webkit-transition: opacity 0.15s linear, z-index 0.15;
+  -o-transition: opacity 0.15s linear, z-index 0.15;
+  transition: opacity 0.15s linear, z-index 0.15;
+  z-index: -1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.account_pp .model-open {
+  z-index: 99999;
+  opacity: 1;
+  overflow: hidden;
+}
+.account_pp .custom-model-inner {
+  -webkit-transform: translate(0, -25%);
+  -ms-transform: translate(0, -25%);
+  transform: translate(0, -25%);
+  -webkit-transition: -webkit-transform 0.3s ease-out;
+  -o-transition: -o-transform 0.3s ease-out;
+  transition: -webkit-transform 0.3s ease-out;
+  -o-transition: transform 0.3s ease-out;
+  transition: transform 0.3s ease-out;
+  transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
+  display: inline-block;
+  vertical-align: middle;
+  width: 600px;
+  margin: 30px auto;
+  max-width: 97%;
+}
+.account_pp .custom-model-wrap {
+  display: block;
+  width: 100%;
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #999;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+  background-clip: padding-box;
+  outline: 0;
+  text-align: left;
+  padding: 20px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  max-height: calc(100vh - 70px);
+	overflow-y: auto;
+}
+.account_pp .model-open .custom-model-inner {
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
+  position: relative;
+  z-index: 999;
+}
+.account_pp .model-open .bg-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99;
+}
+.account_pp .bg-overlay {
+  background: rgba(0, 0, 0, 0);
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  -webkit-transition: background 0.15s linear;
+  -o-transition: background 0.15s linear;
+  transition: background 0.15s linear;
+}
+.account_pp .close-btn {
+  position: absolute;
+  right: 10px;
+  top: -10px;
+  cursor: pointer;
+  z-index: 99;
+  font-size: 30px;
+  color: #000;
+}
+
+@media screen and (min-width:800px){
+	.account_pp .custom-model-main:before {
+	  content: "";
+	  display: inline-block;
+	  height: auto;
+	  vertical-align: middle;
+	  margin-right: -0px;
+	  height: 100%;
+	}
+}
+@media screen and (max-width:799px){
+  .account_pp .custom-model-inner{margin-top: 45px;}
+}
+
+</style>
+<script>
+</script>
+<script>
+$('span.login_btn').click(function(){
+    $('form#createCustomerForm').hide();
+    $('form#loginForm').show();
+});
+  $('span.register_btn').click(function(){
+    $('form#loginForm').hide();
+    $('form#createCustomerForm').show();
+});
+  
+ $(document).ready(function() {
+  $('#createCustomerForm').on('submit', function(e) {
+    e.preventDefault(); 
+tihis_val =this;
+var main_pp =$('form#createCustomerForm .main_pp input').val();
+var remove_pp =$('form#createCustomerForm .remove_pp input').val();
+if(main_pp == remove_pp){
+var remove_pp =$('form#createCustomerForm .remove_pp').remove();
+  setTimeout(function() {
+var formData = $(tihis_val).serialize();  
+    console.log('formData', formData);
+      $.ajax({
+        type: 'POST',
+        url: '/account',
+        data: formData,
+        success: function(response) {
+          window.location.href = '/checkout'; 
+        },
+        error: function(xhr, status, error) {        
+         window.location.href = '/collections/all'; 
+        }
+     });
+    }, 1500);
+}else{
+$('.rong_password').show();
+  setTimeout(function() {
+    $('.rong_password').hide();
+  }, 2500);
+}
+    
+      
+   
+  });
+});
+$(document).ready(function() {
+  $('#loginForm').on('submit', function(e) {
+    e.preventDefault();    
+    var loginData = $(this).serialize();
+    $.ajax({
+      type: 'POST',
+      url: '/account/login', 
+      data: loginData,
+      success: function(response) {      
+        if ($(response).find('.errors').length > 0) {
+          var errorMessage = $(response).find('.errors').text();
+          alert('Login failed: ' + errorMessage);
+        } else {        
+          window.location.href = '/checkout'; 
+        }
+      },
+      error: function(xhr, status, error) {
+       
+      }
+    });
+  });
+});
+
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  document.querySelector('.forget_password_btn').addEventListener('click', function() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('forget_password').style.display = 'block';
+  });
+});
+  document.addEventListener('DOMContentLoaded', function() {
+  document.querySelector('.cancel_forget_password').addEventListener('click', function() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('forget_password').style.display = 'none';
+  });
+});
+$(".toggle-password").click(function() {
+    $(this).toggleClass("fa-eye fa-eye-slash");
+    input = $(this).parent().find("input");
+    if (input.attr("type") == "password") {
+        input.attr("type", "text");
+    } else {
+        input.attr("type", "password");
+    }
+});
+  $(".confirm-toggle-password").click(function() {
+    $(this).toggleClass("fa-eye fa-eye-slash");
+    input = $(this).parent().find("input");
+    if (input.attr("type") == "password") {
+        input.attr("type", "text");
+    } else {
+        input.attr("type", "password");
+    }
+});
+</script>
