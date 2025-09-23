@@ -1,16 +1,14 @@
-
-<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
+{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
+{{ 'component-search.css' | asset_url | stylesheet_tag }}
+{{ 'component-menu-drawer.css' | asset_url | stylesheet_tag }}
+{{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}
+{{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
 {%- if settings.predictive_search_enabled -%}
-  <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 {%- if section.settings.menu_type_desktop == 'mega' -%}
-  <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
-
 {%- if settings.cart_type == "drawer" -%}
   {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
   {{ 'component-cart.css' | asset_url | stylesheet_tag }}
@@ -84,216 +82,13 @@
     padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem;
   }
 
-  .section-custom-header {
-    position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
+  .section-header {
+    position: sticky;
     margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
-    z-index: 500 !important; /* Lower z-index to allow cart drawer to appear above */
-  }
-
-  /* Custom header wrapper with moderate z-index */
-  .section-custom-header .header-wrapper {
-    z-index: 500 !important;
-    position: relative;
-  }
-
-  /* Custom header specific z-index fixes */
-  .section-custom-header .header {
-    z-index: 500 !important;
-    position: relative;
-  }
-
-  /* Dropdown menu z-index - above header but below cart */
-  .section-custom-header .header__submenu,
-  .section-custom-header .mega-menu,
-  .section-custom-header .header-dropdown-menu,
-  .section-custom-header .dropdown-menu {
-    z-index: 600 !important;
-  }
-
-  /* Mobile menu drawer - highest priority for navigation */
-  .section-custom-header .menu-drawer,
-  .section-custom-header .menu-drawer-container,
-  .section-custom-header header-drawer {
-    z-index: 10001 !important;
-  }
-
-  /* Mobile menu overlay */
-  .section-custom-header .menu-drawer > details > summary::before {
-    z-index: 10002 !important;
-  }
-
-  /* Lower lightbox z-index when custom header is present */
-  .section-custom-header ~ main .lightbox,
-  .section-custom-header ~ * .lightbox {
-    z-index: 300 !important;
-  }
-
-  /* CRITICAL FIX: Ensure product media containers don't interfere with menu drawer */
-  .section-custom-header ~ main .product-media-container,
-  .section-custom-header ~ main .product-media-container.media-type-image.media-fit-contain.global-media-settings.gradient,
-  .section-custom-header ~ main .global-media-settings,
-  .section-custom-header ~ main .media-gallery,
-  .section-custom-header ~ main .product__media-list,
-  .section-custom-header ~ main .custom-product-images {
-    /* Ensure these elements have lower z-index than menu drawer */
-    z-index: auto !important;
-    /* Reset any isolation that might create stacking context issues */
-    isolation: auto !important;
-  }
-
-  /* Ensure product media containers don't create problematic stacking contexts */
-  .section-custom-header ~ main .product-media-container * {
-    z-index: auto !important;
-  }
-
-  /* Surgical fix: Only target properties that create stacking contexts without breaking visuals */
-  .section-custom-header ~ main .product-media-container:not(.menu-drawer):not(.menu-drawer *),
-  .section-custom-header ~ main .global-media-settings:not(.menu-drawer):not(.menu-drawer *) {
-    /* Only reset properties that specifically create stacking contexts */
-    isolation: auto !important;
-    /* Ensure these don't have conflicting z-index */
-    z-index: auto !important;
-  }
-
-  /* Force menu drawer to be above product content specifically */
-  .section-custom-header .menu-drawer,
-  .section-custom-header .menu-drawer-container,
-  .section-custom-header header-drawer,
-  .section-custom-header .menu-drawer > details > summary::before {
-    /* Use a z-index that's specifically higher than any product media */
-    z-index: 10001 !important;
-    /* Ensure we're positioned correctly */
-    position: relative !important;
-  }
-
-  /* Cart drawer and notification - highest priority */
-  cart-drawer,
-  cart-notification,
-  .cart-drawer,
-  .cart-notification,
-  .drawer,
-  #cart-drawer,
-  #CartDrawer,
-  .js-drawer,
-  [data-drawer="cart"] {
-    z-index: 10000 !important;
-  }
-
-  /* Cart overlay background */
-  .cart-drawer__overlay,
-  .drawer__overlay,
-  .overlay {
-    z-index: 9999 !important;
-  }
-
-  /* Cart drawer content */
-  .cart-drawer__inner,
-  .drawer__inner {
-    z-index: 10001 !important;
-  }
-
-  /* Fix cart flash in custom header context */
-  .section-custom-header ~ cart-drawer:not(.cart-loaded),
-  .section-custom-header ~ .cart-drawer:not(.cart-loaded) {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transform: translateX(100%) !important;
-    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-  }
-
-  /* Show cart when loaded in custom header context */
-  .section-custom-header ~ cart-drawer.cart-loaded,
-  .section-custom-header ~ .cart-drawer.cart-loaded {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateX(0) !important;
-  }
-
-  /* Prevent multiple cart drawers from appearing */
-  .section-custom-header ~ cart-drawer + cart-drawer,
-  .section-custom-header ~ .cart-drawer + .cart-drawer {
-    display: none !important;
-  }
-
-  /* Force menu color scheme to match header settings */
-  .section-custom-header .header__submenu,
-  .section-custom-header .mega-menu__content,
-  .section-custom-header .menu-drawer {
-    background: rgb(var(--color-background)) !important;
-    color: rgb(var(--color-foreground)) !important;
-  }
-
-  .section-custom-header .header__submenu .list-menu__item,
-  .section-custom-header .mega-menu__content .list-menu__item,
-  .section-custom-header .menu-drawer .list-menu__item {
-    color: rgb(var(--color-foreground)) !important;
-  }
-
-  .section-custom-header .header__submenu .list-menu__item--link:hover,
-  .section-custom-header .mega-menu__content .list-menu__item--link:hover,
-  .section-custom-header .menu-drawer .list-menu__item--link:hover {
-    color: rgb(var(--color-foreground)) !important;
-    background: rgba(var(--color-foreground), 0.1) !important;
-  }
-
-  /* Schools mode styling */
-  .schools-active {
-    font-weight: bold !important;
-    position: relative;
-  }
-  
-  .schools-active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: currentColor;
-  }
-  
-  /* Hide mega menu dropdown when not needed */
-  .schools-navigation-active .mega-menu__content {
-    transition: opacity 0.3s ease;
-  }
-  
-  /* Smooth transitions for mode switching */
-  .list-menu__item {
-    transition: all 0.3s ease;
-  }
-  
-  /* Menu type styling */
-  .menu-type-dtc .section-custom-header {
-    /* Styling for when main-menu-dtc is being used (Schools menu item detected) */
-  }
-  
-  .menu-type-standard .section-custom-header {
-    /* Styling for when standard menu is being used (No Schools menu item) */
-  }
-  
-  /* Neutral page styling - maintain current navigation state */
-  .neutral-page-active .section-custom-header {
-    /* Ensure navigation remains stable on neutral pages */
-  }
-  
-  .neutral-page-active .section-custom-header .header__menu-item {
-    /* Prevent visual changes on neutral pages */
-    opacity: 1;
-  }
-  
-  /* Override schools mode changes on neutral pages */
-  .neutral-page-active.schools-navigation-active .section-custom-header .header__menu-item {
-    /* Maintain normal styling even if schools mode is active */
-    font-weight: normal;
-  }
-  
-  .neutral-page-active.schools-navigation-active .section-custom-header .schools-active::after {
-    /* Hide schools indicators on neutral pages */
-    display: none;
   }
 
   @media screen and (min-width: 750px) {
-    .section-custom-header {
+    .section-header {
       margin-bottom: {{ section.settings.margin_bottom }}px;
     }
   }
@@ -315,7 +110,7 @@
 {%- endif -%}
 
 <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
-  <symbol id="icon-search" viewbox="0 0 18 19" fill="none">
+  <symbol id="icon-search" viewBox="0 0 18 19" fill="none">
     <path fill-rule="evenodd" clip-rule="evenodd" d="M11.03 11.68A5.784 5.784 0 112.85 3.5a5.784 5.784 0 018.18 8.18zm.26 1.12a6.78 6.78 0 11.72-.7l5.4 5.4a.5.5 0 11-.71.7l-5.41-5.4z" fill="currentColor"/>
   </symbol>
 
@@ -336,152 +131,6 @@
       assign has_app_block = true
     endif
   endfor
-
-  # Detect if "Schools" menu item exists in any menu to determine which menu to show
-  assign schools_menu_item_exists = false
-  assign dtc_menu = linklists['main-menu-dtc']
-  assign fallback_menu = section.settings.menu
-  
-  # Check if Schools menu item exists in the main menu
-  if section.settings.menu != blank
-    for link in section.settings.menu.links
-      if link.title == 'Schools' or link.title == 'schools' or link.title contains 'School' or link.title contains 'school'
-        assign schools_menu_item_exists = true
-        break
-      endif
-    endfor
-  endif
-  
-  # Check if Schools menu item exists in the DTC menu
-  unless schools_menu_item_exists
-    if dtc_menu != blank
-      for link in dtc_menu.links
-        if link.title == 'Schools' or link.title == 'schools' or link.title contains 'School' or link.title contains 'school'
-          assign schools_menu_item_exists = true
-          break
-        endif
-      endfor
-    endif
-  endunless
-  
-  # Check if Schools menu item exists in the schools menu handle
-  unless schools_menu_item_exists
-    if section.settings.schools_menu_handle != blank
-      assign schools_menu_check = linklists[section.settings.schools_menu_handle]
-      if schools_menu_check != blank
-        for link in schools_menu_check.links
-          if link.title == 'Schools' or link.title == 'schools' or link.title contains 'School' or link.title contains 'school'
-            assign schools_menu_item_exists = true
-            break
-          endif
-        endfor
-      endif
-    endif
-  endunless
-  
-  # USE EXACTLY what's selected in theme customizer - NO AUTO-DETECTION
-  assign selected_menu = section.settings.menu
-  assign menu_type = 'manual'
-  echo '<!-- Using EXACT menu from theme settings: ' | append: selected_menu.handle | append: ' -->'
-
-  # Debug information
-  echo '<!-- Debug: schools_menu_item_exists = ' | append: schools_menu_item_exists | append: ' -->'
-  echo '<!-- Debug: dtc_menu handle = ' | append: dtc_menu.handle | append: ' -->'
-  echo '<!-- Debug: selected_menu handle = ' | append: selected_menu.handle | append: ' -->'
-  echo '<!-- Debug: menu_type = ' | append: menu_type | append: ' -->'
-
-  # Detect neutral pages that should NOT trigger menu switching
-  assign is_neutral_page = false
-  assign neutral_pages = 'about-us,about,free-cards,free-card,contact-us,contact,delivery,return,terms,conditions,cookie,privacy,faq'
-  assign neutral_pages_array = neutral_pages | split: ','
-  
-  # Check if current page is a neutral page
-  if request.page_type == 'page'
-    for neutral_handle in neutral_pages_array
-      if page.handle == neutral_handle or page.handle contains neutral_handle
-        assign is_neutral_page = true
-        break
-      endif
-    endfor
-  endif
-  
-  # Check URL for neutral page patterns
-  unless is_neutral_page
-    for neutral_handle in neutral_pages_array
-      if request.path contains neutral_handle
-        assign is_neutral_page = true
-        break
-      endif
-    endfor
-  endunless
-  
-  # Initialize menu variables
-  assign is_schools_section = false
-  assign current_menu = selected_menu
-  assign menu_home_url = routes.root_url
-  
-  # Only check for schools section if NOT on a neutral page
-  unless is_neutral_page
-    # Check if current URL contains schools or if we're on a schools-related page
-    if request.page_type == 'page' and page.handle contains 'school'
-      assign is_schools_section = true
-    elsif request.page_type == 'collection' and collection.handle contains 'school'
-      assign is_schools_section = true
-    elsif request.page_type == 'product' and product.type contains 'school'
-      assign is_schools_section = true
-    elsif template contains 'school'
-      assign is_schools_section = true
-    endif
-    
-    # Check if URL parameters or current page indicates schools section
-    if request.path contains '/school' or request.path contains 'school'
-      assign is_schools_section = true
-    endif
-    
-    # Switch to schools menu if we're in schools section and schools menu is available
-    if is_schools_section and section.settings.schools_menu_handle != blank
-      assign current_menu = linklists[section.settings.schools_menu_handle]
-    endif
-  endunless
-  
-  # Find the home link from the current menu
-  if current_menu != blank
-    for link in current_menu.links
-      if link.title contains 'Home' or link.title contains 'home' or link.url == routes.root_url
-        assign menu_home_url = link.url
-        break
-      endif
-    endfor
-  endif
-  
-  # Use logo link from theme editor settings
-  if section.settings.logo_link != blank
-    assign logo_url = section.settings.logo_link
-    assign menu_debug_info = 'CUSTOM LINK (from theme editor)'
-  else
-    # Fallback to homepage if no custom link is set
-    assign logo_url = routes.root_url
-    assign menu_debug_info = 'DEFAULT HOMEPAGE (no custom link set)'
-  endif
-  
-  # Debug: Build menu items info for current_menu
-  assign menu_items_debug = ''
-  if current_menu != blank
-    for link in current_menu.links
-      assign menu_items_debug = menu_items_debug | append: link.title | append: ' -> ' | append: link.url | append: '; '
-    endfor
-  endif
-  
-  # Debug output
-  echo '<!-- Logo URL Debug: logo_link_setting = ' | append: section.settings.logo_link | append: ' -->'
-  echo '<!-- Logo URL Debug: current_menu = ' | append: current_menu.handle | append: ' -->'
-  echo '<!-- Logo URL Debug: logo_url = ' | append: logo_url | append: ' -->'
-  echo '<!-- Logo URL Debug: action = ' | append: menu_debug_info | append: ' -->'
-  if current_menu != blank
-    echo '<!-- Logo URL Debug: menu items = ' | append: menu_items_debug | append: ' -->'
-    echo '<!-- Logo URL Debug: first menu item = ' | append: current_menu.links.first.title | append: ' -> ' | append: current_menu.links.first.url | append: ' -->'
-  endif
-  
 -%}
 
 <{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
@@ -497,13 +146,13 @@
       assign localization_forms = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if current_menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if localization_forms %} header--has-localizations{% endif %}">
+  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if localization_forms %} header--has-localizations{% endif %}">
     {%- liquid
-      if current_menu != blank
-        render 'header-drawer', current_menu: current_menu, color_scheme: section.settings.menu_color_scheme
+      if section.settings.menu != blank
+        render 'header-drawer', menu: section.settings.menu, color_scheme: section.settings.menu_color_scheme
       endif
 
-      if section.settings.logo_position == 'top-center' or current_menu == blank
+      if section.settings.logo_position == 'top-center' or section.settings.menu == blank
         render 'header-search', input_id: 'Search-In-Modal-1'
       endif
     -%}
@@ -512,7 +161,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ logo_url }}" class="header__heading-link link link--text focus-inset" data-debug-url="{{ logo_url }}" data-debug-setting="{{ section.settings.logo_link }}">
+          <a href="{%- if section.settings.logo_link != blank -%}{{ section.settings.logo_link }}{%- else -%}{{ routes.root_url }}{%- endif -%}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
@@ -539,11 +188,11 @@
     {%- endif -%}
 
     {%- liquid
-      if current_menu != blank
+      if section.settings.menu != blank
         if section.settings.menu_type_desktop == 'dropdown'
-          render 'header-dropdown-menu', color_scheme: section.settings.menu_color_scheme
+          render 'header-dropdown-menu', menu: section.settings.menu, color_scheme: section.settings.menu_color_scheme
         elsif section.settings.menu_type_desktop != 'drawer'
-          render 'header-mega-menu', color_scheme: section.settings.menu_color_scheme
+          render 'header-mega-menu', menu: section.settings.menu, color_scheme: section.settings.menu_color_scheme
         endif
       endif
     -%}
@@ -552,7 +201,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ logo_url }}" class="header__heading-link link link--text focus-inset" data-debug-url="{{ logo_url }}" data-debug-setting="{{ section.settings.logo_link }}">
+          <a href="{%- if section.settings.logo_link != blank -%}{{ section.settings.logo_link }}{%- else -%}{{ routes.root_url }}{%- endif -%}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
@@ -602,9 +251,7 @@
           </localization-form>
         {%- endif -%}
       </div>
-      {% comment %}
-      {% render 'header-search', input_id: 'Search-In-Modal' %}
-      {% endcomment %}
+      {%- render 'header-search', input_id: 'Search-In-Modal' -%}
       {%- if shop.customer_accounts_enabled -%}
         <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset{% if section.settings.menu != blank %} small-hide{% endif %}">
           {%- if section.settings.enable_customer_avatar -%}
@@ -646,14 +293,14 @@
           endif
         -%}
         <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
-        
+        {%- if cart != empty -%}
           <div class="cart-count-bubble">
             {%- if cart.item_count < 100 -%}
               <span aria-hidden="true">{{ cart.item_count }}</span>
             {%- endif -%}
             <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
           </div>
-        
+        {%- endif -%}
       </a>
     </div>
   </header>
@@ -670,7 +317,7 @@
     }
 
     connectedCallback() {
-      this.header = document.querySelector('.section-custom-header');
+      this.header = document.querySelector('.section-header');
       this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always' || this.getAttribute('data-sticky-type') === 'reduce-logo-size';
       this.headerBounds = {};
 
@@ -773,760 +420,7 @@
   }
 
   customElements.define('sticky-header', StickyHeader);
-
-  // Integration with Simple Menu Switcher
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('🏗️ Custom Header: Initializing menu integration...');
-    
-    // Check if we're on a neutral page that should maintain navigation state
-    const neutralPages = ['about-us', 'about', 'free-cards', 'free-card', 'contact-us', 'contact', 'delivery', 'return', 'terms', 'conditions', 'cookie', 'privacy', 'faq'];
-    const currentPath = window.location.pathname.toLowerCase();
-    const isNeutralPage = neutralPages.some(page => currentPath.includes(page));
-    
-    // Get menu detection information from Liquid
-    const menuType = '{{ menu_type | default: "standard" }}';
-    const schoolsMenuItemExists = {{ schools_menu_item_exists | default: false }};
-    const selectedMenuHandle = '{{ selected_menu.handle | default: "" }}';
-    
-    console.log('🔍 Custom Header: Menu Detection Results:', {
-      menuType: menuType,
-      schoolsMenuItemExists: schoolsMenuItemExists,
-      selectedMenuHandle: selectedMenuHandle
-    });
-    
-    if (isNeutralPage) {
-      console.log('🟡 Custom Header: Neutral page detected, maintaining navigation state');
-      document.body.classList.add('neutral-page-active');
-    }
-    
-    // Add menu type class to body for styling purposes
-    document.body.classList.add(`menu-type-${menuType}`);
-    
-    // Wait for simple menu switcher to be available
-    let attempts = 0;
-    const waitForSwitcher = setInterval(() => {
-      if (window.simpleMenuSwitcher || attempts > 50) {
-        clearInterval(waitForSwitcher);
-        
-        if (window.simpleMenuSwitcher) {
-          console.log('✅ Custom Header: Connected to Simple Menu Switcher');
-          
-          // Listen for schools mode events
-          window.addEventListener('schoolsModeActivated', (e) => {
-            if (!isNeutralPage) {
-              console.log('🎓 Custom Header: Schools mode activated');
-              document.body.classList.add('schools-navigation-active');
-              updateMenuVisualState(true);
-            } else {
-              console.log('🟡 Custom Header: Schools mode activation ignored on neutral page');
-            }
-          });
-          
-          window.addEventListener('schoolsModeDeactivated', (e) => {
-            if (!isNeutralPage) {
-              console.log('🏪 Custom Header: Schools mode deactivated');
-              document.body.classList.remove('schools-navigation-active');
-              updateMenuVisualState(false);
-            } else {
-              console.log('🟡 Custom Header: Schools mode deactivation ignored on neutral page');
-            }
-          });
-          
-          // Apply initial state only if not on neutral page
-          if (!isNeutralPage) {
-            const isSchoolsMode = window.simpleMenuSwitcher.isInSchoolsMode();
-            if (isSchoolsMode) {
-              document.body.classList.add('schools-navigation-active');
-              updateMenuVisualState(true);
-            }
-          }
-          
-        } else {
-          console.warn('⚠️ Custom Header: Simple Menu Switcher not found');
-        }
-      }
-      attempts++;
-    }, 100);
-    
-    function updateMenuVisualState(isSchoolsMode) {
-      // Update visual indicators
-      const schoolsLinks = document.querySelectorAll('.section-custom-header a[href*="school"]');
-      schoolsLinks.forEach(link => {
-        if (isSchoolsMode) {
-          link.classList.add('schools-active');
-        } else {
-          link.classList.remove('schools-active');
-        }
-      });
-      
-      // Update mega menu dropdown behavior
-      const megaMenus = document.querySelectorAll('.section-custom-header .mega-menu');
-      megaMenus.forEach(menu => {
-        if (isSchoolsMode) {
-          menu.classList.add('schools-mode-active');
-        } else {
-          menu.classList.remove('schools-mode-active');
-        }
-      });
-    }
-  });
 {% endjavascript %}
-
-<script>
-// Custom Header Drawer Fix for .section-custom-header
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('🛠️ Custom Header: Initializing custom drawer functionality...');
-  
-  // Find the custom header drawer elements
-  const customHeaderDrawer = document.querySelector('.section-custom-header header-drawer');
-  const customHeaderSection = document.querySelector('.section-custom-header');
-  
-  if (!customHeaderDrawer || !customHeaderSection) {
-    console.warn('⚠️ Custom Header: Drawer elements not found');
-    return;
-  }
-  
-  // Custom HeaderDrawer class for section-custom-header
-  class CustomHeaderDrawer {
-    constructor(element) {
-      this.element = element;
-      this.header = customHeaderSection;
-      this.mainDetailsToggle = element.querySelector('#Details-menu-drawer-container');
-      this.summaryToggle = element.querySelector('.header__icon--menu');
-      this.menuDrawer = element.querySelector('#menu-drawer');
-      this.borderOffset = 0;
-      
-      this.init();
-    }
-    
-    init() {
-      if (!this.summaryToggle || !this.mainDetailsToggle) {
-        console.warn('⚠️ Custom Header: Required elements not found');
-        return;
-      }
-      
-      // Remove existing event listeners to prevent conflicts
-      this.summaryToggle.removeEventListener('click', this.onSummaryClick);
-      
-      // Add our custom event listener
-      this.summaryToggle.addEventListener('click', this.onSummaryClick.bind(this));
-      
-      // Handle escape key
-      document.addEventListener('keyup', (event) => {
-        if (event.code === 'Escape' && this.mainDetailsToggle.hasAttribute('open')) {
-          this.closeMenuDrawer(event, this.summaryToggle);
-        }
-      });
-      
-      // Handle overlay click to close drawer
-      document.addEventListener('click', (event) => {
-        if (this.mainDetailsToggle.hasAttribute('open')) {
-          // Close if clicking outside the menu drawer content
-          if (!this.menuDrawer.contains(event.target) && 
-              !this.summaryToggle.contains(event.target)) {
-            this.closeMenuDrawer(event, this.summaryToggle);
-          }
-        }
-      });
-      
-      console.log('✅ Custom Header: Drawer initialized successfully');
-    }
-    
-    onSummaryClick(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const isOpen = this.mainDetailsToggle.hasAttribute('open');
-      
-      if (isOpen) {
-        this.closeMenuDrawer(event, this.summaryToggle);
-      } else {
-        this.openMenuDrawer(this.summaryToggle);
-      }
-      
-      // Set viewport height for mobile
-      if (window.matchMedia('(max-width: 990px)').matches) {
-        document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
-      }
-    }
-    
-    openMenuDrawer(summaryElement) {
-      if (!this.header) {
-        console.warn('⚠️ Custom Header: Header element not found');
-        return;
-      }
-      
-      try {
-        // Calculate header bottom position safely
-        const headerRect = this.header.getBoundingClientRect();
-        const headerBottom = parseInt(headerRect.bottom - this.borderOffset);
-        
-        document.documentElement.style.setProperty(
-          '--header-bottom-position',
-          `${headerBottom}px`
-        );
-        
-        // Add classes for styling
-        this.header.classList.add('menu-open');
-        
-        // Open the details element
-        this.mainDetailsToggle.setAttribute('open', '');
-        
-        setTimeout(() => {
-          this.mainDetailsToggle.classList.add('menu-opening');
-        }, 10);
-        
-        // Set aria-expanded
-        summaryElement.setAttribute('aria-expanded', 'true');
-        
-        // Prevent body scroll on mobile
-        document.body.classList.add('overflow-hidden-tablet');
-        
-        // Add resize listener
-        window.addEventListener('resize', this.onResize.bind(this));
-        
-        console.log('📱 Custom Header: Menu drawer opened');
-        
-      } catch (error) {
-        console.error('❌ Custom Header: Error opening menu drawer:', error);
-      }
-    }
-    
-    closeMenuDrawer(event, elementToFocus) {
-      if (!elementToFocus) return;
-      
-      try {
-        // Remove classes
-        if (this.header) {
-          this.header.classList.remove('menu-open');
-        }
-        
-        this.mainDetailsToggle.removeAttribute('open');
-        this.mainDetailsToggle.classList.remove('menu-opening');
-        
-        // Reset aria-expanded
-        elementToFocus.setAttribute('aria-expanded', 'false');
-        
-        // Re-enable body scroll
-        document.body.classList.remove('overflow-hidden-tablet');
-        
-        // Remove resize listener
-        window.removeEventListener('resize', this.onResize);
-        
-        // Focus the toggle element
-        elementToFocus.focus();
-        
-        console.log('📱 Custom Header: Menu drawer closed');
-        
-      } catch (error) {
-        console.error('❌ Custom Header: Error closing menu drawer:', error);
-      }
-    }
-    
-    onResize() {
-      if (this.header) {
-        try {
-          const headerRect = this.header.getBoundingClientRect();
-          document.documentElement.style.setProperty(
-            '--header-bottom-position',
-            `${parseInt(headerRect.bottom - this.borderOffset)}px`
-          );
-          document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
-        } catch (error) {
-          console.error('❌ Custom Header: Error on resize:', error);
-        }
-      }
-    }
-  }
-  
-  // Initialize the custom drawer
-  try {
-    const customDrawer = new CustomHeaderDrawer(customHeaderDrawer);
-    
-    // Store reference globally for debugging
-    window.customHeaderDrawer = customDrawer;
-    
-  } catch (error) {
-    console.error('❌ Custom Header: Failed to initialize custom drawer:', error);
-  }
-});
-
-// Z-INDEX DEBUGGING SUITE
-window.debugMenuDrawer = {
-  
-  // Main debugging function
-  analyzeZIndexIssues() {
-    console.log('🔍 MENU DRAWER Z-INDEX DEBUGGING SUITE');
-    console.log('=====================================');
-    
-    this.analyzeMenuDrawerElements();
-    this.analyzeProductPageElements();
-    this.analyzeStackingContexts();
-    this.analyzeComputedStyles();
-    this.suggestFixes();
-  },
-  
-  // Analyze menu drawer elements
-  analyzeMenuDrawerElements() {
-    console.log('\n📱 MENU DRAWER ELEMENTS ANALYSIS:');
-    console.log('--------------------------------');
-    
-    const elements = {
-      'Menu Button': '.header__icon--menu',
-      'Menu Container': '#Details-menu-drawer-container',
-      'Menu Drawer': '#menu-drawer',
-      'Menu Overlay': '.header__icon--menu[aria-expanded="true"]::before',
-      'Header Drawer': 'header-drawer',
-      'Custom Header': '.section-custom-header'
-    };
-    
-    Object.entries(elements).forEach(([name, selector]) => {
-      const element = document.querySelector(selector);
-      if (element) {
-        const computed = window.getComputedStyle(element);
-        console.log(`${name}:`, {
-          element: element,
-          zIndex: computed.zIndex,
-          position: computed.position,
-          transform: computed.transform,
-          isolation: computed.isolation,
-          opacity: computed.opacity,
-          visibility: computed.visibility,
-          display: computed.display
-        });
-      } else {
-        console.warn(`❌ ${name} not found with selector: ${selector}`);
-      }
-    });
-  },
-  
-  // Analyze product page elements that might interfere
-  analyzeProductPageElements() {
-    console.log('\n🖼️ PRODUCT PAGE ELEMENTS ANALYSIS:');
-    console.log('----------------------------------');
-    
-    const productSelectors = [
-      '.product-media-container',
-      '.product-media-container.media-type-image.media-fit-contain.global-media-settings.gradient',
-      '.global-media-settings',
-      '.media-gallery',
-      '.product__media-list',
-      '.custom-product-images',
-      '.product__media-item',
-      '.product__modal-opener'
-    ];
-    
-    productSelectors.forEach(selector => {
-      const elements = document.querySelectorAll(selector);
-      if (elements.length > 0) {
-        console.log(`${selector} (${elements.length} found):`);
-        elements.forEach((element, index) => {
-          const computed = window.getComputedStyle(element);
-          console.log(`  [${index}]:`, {
-            element: element,
-            zIndex: computed.zIndex,
-            position: computed.position,
-            transform: computed.transform,
-            isolation: computed.isolation,
-            opacity: computed.opacity,
-            filter: computed.filter,
-            willChange: computed.willChange,
-            containment: computed.contain || 'none'
-          });
-        });
-      }
-    });
-  },
-  
-  // Analyze stacking contexts
-  analyzeStackingContexts() {
-    console.log('\n📚 STACKING CONTEXT ANALYSIS:');
-    console.log('-----------------------------');
-    
-    const getAllElements = () => document.querySelectorAll('*');
-    const stackingContextElements = [];
-    
-    getAllElements().forEach(element => {
-      const computed = window.getComputedStyle(element);
-      
-      // Check for stacking context creating properties
-      const createsStackingContext = 
-        computed.position === 'fixed' ||
-        computed.position === 'sticky' ||
-        (computed.position !== 'static' && computed.zIndex !== 'auto') ||
-        computed.opacity !== '1' ||
-        computed.transform !== 'none' ||
-        computed.filter !== 'none' ||
-        computed.isolation === 'isolate' ||
-        computed.mixBlendMode !== 'normal' ||
-        computed.clipPath !== 'none' ||
-        computed.mask !== 'none' ||
-        computed.maskImage !== 'none' ||
-        computed.contain === 'layout' ||
-        computed.contain === 'paint' ||
-        computed.willChange === 'transform' ||
-        computed.willChange === 'opacity';
-        
-      if (createsStackingContext) {
-        stackingContextElements.push({
-          element: element,
-          tagName: element.tagName,
-          className: element.className,
-          id: element.id,
-          zIndex: computed.zIndex,
-          position: computed.position,
-          reason: this.getStackingContextReason(computed)
-        });
-      }
-    });
-    
-    // Sort by z-index (handling 'auto' values)
-    stackingContextElements.sort((a, b) => {
-      const aIndex = a.zIndex === 'auto' ? 0 : parseInt(a.zIndex);
-      const bIndex = b.zIndex === 'auto' ? 0 : parseInt(b.zIndex);
-      return bIndex - aIndex;
-    });
-    
-    console.log('Elements creating stacking contexts (sorted by z-index):');
-    stackingContextElements.forEach((item, index) => {
-      console.log(`${index + 1}.`, {
-        element: `<${item.tagName.toLowerCase()}${item.id ? ' id="' + item.id + '"' : ''}${item.className ? ' class="' + item.className + '"' : ''}>`,
-        zIndex: item.zIndex,
-        position: item.position,
-        reason: item.reason,
-        element: item.element
-      });
-    });
-  },
-  
-  // Get reason for stacking context creation
-  getStackingContextReason(computed) {
-    const reasons = [];
-    
-    if (computed.position === 'fixed') reasons.push('position: fixed');
-    if (computed.position === 'sticky') reasons.push('position: sticky');
-    if (computed.position !== 'static' && computed.zIndex !== 'auto') reasons.push(`position: ${computed.position} + z-index: ${computed.zIndex}`);
-    if (computed.opacity !== '1') reasons.push(`opacity: ${computed.opacity}`);
-    if (computed.transform !== 'none') reasons.push('transform');
-    if (computed.filter !== 'none') reasons.push('filter');
-    if (computed.isolation === 'isolate') reasons.push('isolation: isolate');
-    if (computed.mixBlendMode !== 'normal') reasons.push('mix-blend-mode');
-    if (computed.clipPath !== 'none') reasons.push('clip-path');
-    if (computed.mask !== 'none') reasons.push('mask');
-    if (computed.contain === 'layout' || computed.contain === 'paint') reasons.push(`contain: ${computed.contain}`);
-    if (computed.willChange === 'transform' || computed.willChange === 'opacity') reasons.push(`will-change: ${computed.willChange}`);
-    
-    return reasons.join(', ');
-  },
-  
-  // Analyze computed styles specifically
-  analyzeComputedStyles() {
-    console.log('\n🎨 COMPUTED STYLES ANALYSIS:');
-    console.log('---------------------------');
-    
-    const menuDrawer = document.querySelector('#menu-drawer');
-    const menuContainer = document.querySelector('#Details-menu-drawer-container');
-    const productContainer = document.querySelector('.product-media-container');
-    
-    if (menuDrawer && productContainer) {
-      const menuStyles = window.getComputedStyle(menuDrawer);
-      const productStyles = window.getComputedStyle(productContainer);
-      
-      console.log('Menu Drawer vs Product Container:', {
-        menuDrawer: {
-          zIndex: menuStyles.zIndex,
-          position: menuStyles.position,
-          top: menuStyles.top,
-          left: menuStyles.left,
-          transform: menuStyles.transform,
-          visibility: menuStyles.visibility,
-          display: menuStyles.display
-        },
-        productContainer: {
-          zIndex: productStyles.zIndex,
-          position: productStyles.position,
-          top: productStyles.top,
-          left: productStyles.left,
-          transform: productStyles.transform,
-          isolation: productStyles.isolation
-        }
-      });
-    }
-    
-    // Check if menu is actually open
-    const menuButton = document.querySelector('.header__icon--menu');
-    if (menuButton) {
-      console.log('Menu Button State:', {
-        ariaExpanded: menuButton.getAttribute('aria-expanded'),
-        isOpen: menuContainer?.hasAttribute('open'),
-        containerClasses: menuContainer?.className,
-        drawerClasses: menuDrawer?.className
-      });
-    }
-  },
-  
-  // Suggest fixes based on analysis
-  suggestFixes() {
-    console.log('\n🔧 SUGGESTED FIXES:');
-    console.log('-------------------');
-    
-    const menuDrawer = document.querySelector('#menu-drawer');
-    const productContainers = document.querySelectorAll('.product-media-container');
-    
-    if (menuDrawer && productContainers.length > 0) {
-      const menuZIndex = parseInt(window.getComputedStyle(menuDrawer).zIndex) || 0;
-      let maxProductZIndex = 0;
-      
-      productContainers.forEach(container => {
-        const zIndex = parseInt(window.getComputedStyle(container).zIndex) || 0;
-        maxProductZIndex = Math.max(maxProductZIndex, zIndex);
-      });
-      
-      console.log('Current State:', {
-        menuDrawerZIndex: menuZIndex,
-        maxProductZIndex: maxProductZIndex,
-        difference: menuZIndex - maxProductZIndex
-      });
-      
-      if (menuZIndex <= maxProductZIndex) {
-        console.log('🚨 ISSUE FOUND: Menu drawer z-index is not higher than product containers!');
-        console.log(`Recommended: Set menu drawer z-index to at least ${maxProductZIndex + 1000}`);
-      }
-      
-      // Test fix
-      this.testFix();
-    }
-  },
-  
-  // Test a fix by temporarily modifying styles
-  testFix() {
-    console.log('\n🧪 TESTING TEMPORARY FIX:');
-    console.log('-------------------------');
-    
-    const menuDrawer = document.querySelector('#menu-drawer');
-    const menuContainer = document.querySelector('#Details-menu-drawer-container');
-    
-    if (menuDrawer && menuContainer) {
-      // Store original styles
-      const originalMenuStyle = menuDrawer.style.zIndex;
-      const originalContainerStyle = menuContainer.style.zIndex;
-      
-      // Apply test fix
-      menuDrawer.style.zIndex = '99999';
-      menuContainer.style.zIndex = '99999';
-      
-      console.log('Applied temporary fix with z-index: 99999');
-      console.log('Check if menu now appears above product images');
-      console.log('To revert, run: window.debugMenuDrawer.revertTestFix()');
-      
-      // Store original styles for reverting
-      this.originalStyles = {
-        menuDrawer: originalMenuStyle,
-        menuContainer: originalContainerStyle
-      };
-    }
-  },
-  
-  // Revert test fix
-  revertTestFix() {
-    console.log('🔄 Reverting temporary fix...');
-    
-    const menuDrawer = document.querySelector('#menu-drawer');
-    const menuContainer = document.querySelector('#Details-menu-drawer-container');
-    
-    if (menuDrawer && menuContainer && this.originalStyles) {
-      menuDrawer.style.zIndex = this.originalStyles.menuDrawer;
-      menuContainer.style.zIndex = this.originalStyles.menuContainer;
-      console.log('✅ Temporary fix reverted');
-    }
-  },
-  
-  // Monitor z-index changes
-  monitorZIndexChanges() {
-    console.log('🔍 Starting z-index monitoring...');
-    
-    const menuDrawer = document.querySelector('#menu-drawer');
-    if (menuDrawer) {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && 
-              (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
-            const computed = window.getComputedStyle(menuDrawer);
-            console.log('📊 Menu drawer style changed:', {
-              zIndex: computed.zIndex,
-              position: computed.position,
-              visibility: computed.visibility,
-              transform: computed.transform
-            });
-          }
-        });
-      });
-      
-      observer.observe(menuDrawer, {
-        attributes: true,
-        attributeFilter: ['style', 'class']
-      });
-      
-      console.log('✅ Monitoring active. Changes will be logged to console.');
-      this.zIndexObserver = observer;
-    }
-  },
-  
-  // Stop monitoring
-  stopMonitoring() {
-    if (this.zIndexObserver) {
-      this.zIndexObserver.disconnect();
-      console.log('⏹️ Z-index monitoring stopped');
-    }
-  }
-};
-
-// Additional debugging for ::before pseudo-element
-window.debugMenuDrawer.analyzePseudoElements = function() {
-  console.log('\n🎭 PSEUDO-ELEMENT ANALYSIS:');
-  console.log('---------------------------');
-  
-  const menuButton = document.querySelector('.header__icon--menu');
-  if (menuButton) {
-    // Check aria-expanded state
-    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-    console.log('Menu Button Pseudo-element State:', {
-      ariaExpanded: isExpanded,
-      selector: isExpanded ? '.header__icon--menu[aria-expanded="true"]::before' : '.header__icon--menu[aria-expanded="false"]::before'
-    });
-    
-    // Try to detect pseudo-element properties through computed styles
-    const beforeStyles = window.getComputedStyle(menuButton, '::before');
-    console.log('::before pseudo-element computed styles:', {
-      content: beforeStyles.content,
-      position: beforeStyles.position,
-      zIndex: beforeStyles.zIndex,
-      background: beforeStyles.background,
-      width: beforeStyles.width,
-      height: beforeStyles.height,
-      top: beforeStyles.top,
-      left: beforeStyles.left,
-      opacity: beforeStyles.opacity,
-      visibility: beforeStyles.visibility,
-      display: beforeStyles.display
-    });
-    
-    // Check if CSS rules exist for this pseudo-element
-    this.checkCSSRulesForPseudoElement();
-  }
-};
-
-// Check CSS rules for pseudo-elements
-window.debugMenuDrawer.checkCSSRulesForPseudoElement = function() {
-  console.log('\n📜 CSS RULES FOR PSEUDO-ELEMENTS:');
-  console.log('----------------------------------');
-  
-  const rules = [];
-  
-  // Check all stylesheets
-  Array.from(document.styleSheets).forEach((styleSheet, sheetIndex) => {
-    try {
-      Array.from(styleSheet.cssRules || []).forEach((rule, ruleIndex) => {
-        if (rule.selectorText && rule.selectorText.includes('::before')) {
-          // Check for menu-related pseudo-element rules
-          if (rule.selectorText.includes('header__icon--menu') || 
-              rule.selectorText.includes('menu-drawer') ||
-              rule.selectorText.includes('summary')) {
-            rules.push({
-              selector: rule.selectorText,
-              cssText: rule.cssText,
-              styleSheet: sheetIndex,
-              ruleIndex: ruleIndex
-            });
-          }
-        }
-      });
-    } catch (e) {
-      console.warn(`Cannot access stylesheet ${sheetIndex}:`, e);
-    }
-  });
-  
-  if (rules.length > 0) {
-    console.log('Found pseudo-element rules:', rules);
-  } else {
-    console.log('No relevant pseudo-element rules found');
-  }
-};
-
-// Enhanced menu state debugging
-window.debugMenuDrawer.analyzeMenuState = function() {
-  console.log('\n🎛️ MENU STATE ANALYSIS:');
-  console.log('----------------------');
-  
-  const menuButton = document.querySelector('.header__icon--menu');
-  const menuContainer = document.querySelector('#Details-menu-drawer-container');
-  const menuDrawer = document.querySelector('#menu-drawer');
-  
-  if (menuButton && menuContainer && menuDrawer) {
-    console.log('Menu Elements State:', {
-      button: {
-        element: menuButton,
-        ariaExpanded: menuButton.getAttribute('aria-expanded'),
-        classes: menuButton.className,
-        visibility: window.getComputedStyle(menuButton).visibility,
-        display: window.getComputedStyle(menuButton).display
-      },
-      container: {
-        element: menuContainer,
-        hasOpenAttribute: menuContainer.hasAttribute('open'),
-        classes: menuContainer.className,
-        visibility: window.getComputedStyle(menuContainer).visibility,
-        display: window.getComputedStyle(menuContainer).display
-      },
-      drawer: {
-        element: menuDrawer,
-        classes: menuDrawer.className,
-        visibility: window.getComputedStyle(menuDrawer).visibility,
-        display: window.getComputedStyle(menuDrawer).display,
-        transform: window.getComputedStyle(menuDrawer).transform
-      }
-    });
-    
-    // Test opening the menu if it's closed
-    if (!menuContainer.hasAttribute('open')) {
-      console.log('\n🔓 Testing menu opening...');
-      console.log('Click the hamburger menu and run this again to see the changes');
-    }
-  }
-};
-
-// Add click event listener for real-time debugging
-document.addEventListener('click', (event) => {
-  if (event.target.closest('.header__icon--menu')) {
-    console.log('\n🖱️ MENU CLICK DETECTED:');
-    console.log('---------------------');
-    
-    setTimeout(() => {
-      window.debugMenuDrawer.analyzeMenuState();
-      window.debugMenuDrawer.analyzePseudoElements();
-      window.debugMenuDrawer.analyzeComputedStyles();
-    }, 100);
-  }
-});
-
-// Auto-run analysis on product pages
-if (window.location.pathname.includes('/products/')) {
-  console.log('🛍️ Product page detected - Running automatic z-index analysis...');
-  setTimeout(() => {
-    window.debugMenuDrawer.analyzeZIndexIssues();
-    window.debugMenuDrawer.analyzePseudoElements();
-    window.debugMenuDrawer.analyzeMenuState();
-  }, 1000);
-}
-
-console.log('🔧 Debug tools loaded!');
-console.log('📋 Available commands:');
-console.log('  - window.debugMenuDrawer.analyzeZIndexIssues()');
-console.log('  - window.debugMenuDrawer.analyzePseudoElements()');
-console.log('  - window.debugMenuDrawer.analyzeMenuState()');
-console.log('  - window.debugMenuDrawer.testFix()');
-console.log('  - window.debugMenuDrawer.monitorZIndexChanges()');
-</script>
 
 <script type="application/ld+json">
   {
@@ -1568,24 +462,10 @@ console.log('  - window.debugMenuDrawer.monitorZIndexChanges()');
   </script>
 {%- endif -%}
 
-<script>
-console.log("=== LOGO LINK DEBUG ===");
-console.log("Menu Handle: {{ current_menu.handle | default: 'NO MENU' }}");
-console.log("Logo URL: {{ logo_url }}");
-console.log("Action: {{ menu_debug_info }}");
-{% if current_menu != blank %}
-console.log("Menu Items:");
-{% for link in current_menu.links %}
-console.log("  - {{ link.title }}: {{ link.url }}");
-{% endfor %}
-{% endif %}
-console.log("========================");
-</script>
-
 {% schema %}
 {
-  "name": "Custom Header",
-  "class": "section-custom-header",
+  "name": "t:sections.header.name",
+  "class": "section-header",
   "max_blocks": 3,
   "enabled_on": {
     "templates": ["*"]
@@ -1619,22 +499,14 @@ console.log("========================");
     {
       "type": "url",
       "id": "logo_link",
-      "label": "Logo Link",
-      "info": "Custom URL for logo to link to. Leave blank to use homepage."
+      "label": "Logo link",
+      "info": "Custom URL for the logo. Leave blank to use the homepage."
     },
     {
       "type": "link_list",
       "id": "menu",
       "default": "main-menu",
-      "label": "t:sections.header.settings.menu.label",
-      "info": "Fallback menu (used when Schools menu item is NOT detected). When a Schools menu item exists anywhere, 'main-menu-dtc' will be used instead."
-    },
-    {
-      "type": "text",
-      "id": "schools_menu_handle",
-      "label": "Schools Menu Handle",
-      "info": "Enter the handle of the schools menu (e.g., 'schools-menu'). This menu will auto-switch when users navigate to schools section. Note: Neutral pages (About Us, Free Cards, Contact Us, etc.) will maintain current navigation state without switching.",
-      "placeholder": "schools-menu"
+      "label": "t:sections.header.settings.menu.label"
     },
     {
       "type": "select",
@@ -1809,12 +681,11 @@ console.log("========================");
         "logo_position": "middle-left",
         "logo_link": "",
         "menu": "main-menu",
-        "schools_menu_handle": "",
         "menu_type_desktop": "dropdown",
         "sticky_header_type": "on-scroll-up",
         "show_line_separator": false,
-        "color_scheme": "scheme-3",
-        "menu_color_scheme": "scheme-3",
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-1",
         "enable_country_selector": false,
         "enable_language_selector": false,
         "enable_customer_avatar": true,
