@@ -834,6 +834,186 @@
   });
 {% endjavascript %}
 
+<script>
+// Custom Header Drawer Fix for .section-custom-header
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🛠️ Custom Header: Initializing custom drawer functionality...');
+  
+  // Find the custom header drawer elements
+  const customHeaderDrawer = document.querySelector('.section-custom-header header-drawer');
+  const customHeaderSection = document.querySelector('.section-custom-header');
+  
+  if (!customHeaderDrawer || !customHeaderSection) {
+    console.warn('⚠️ Custom Header: Drawer elements not found');
+    return;
+  }
+  
+  // Custom HeaderDrawer class for section-custom-header
+  class CustomHeaderDrawer {
+    constructor(element) {
+      this.element = element;
+      this.header = customHeaderSection;
+      this.mainDetailsToggle = element.querySelector('#Details-menu-drawer-container');
+      this.summaryToggle = element.querySelector('.header__icon--menu');
+      this.menuDrawer = element.querySelector('#menu-drawer');
+      this.borderOffset = 0;
+      
+      this.init();
+    }
+    
+    init() {
+      if (!this.summaryToggle || !this.mainDetailsToggle) {
+        console.warn('⚠️ Custom Header: Required elements not found');
+        return;
+      }
+      
+      // Remove existing event listeners to prevent conflicts
+      this.summaryToggle.removeEventListener('click', this.onSummaryClick);
+      
+      // Add our custom event listener
+      this.summaryToggle.addEventListener('click', this.onSummaryClick.bind(this));
+      
+      // Handle escape key
+      document.addEventListener('keyup', (event) => {
+        if (event.code === 'Escape' && this.mainDetailsToggle.hasAttribute('open')) {
+          this.closeMenuDrawer(event, this.summaryToggle);
+        }
+      });
+      
+      // Handle overlay click to close drawer
+      document.addEventListener('click', (event) => {
+        if (this.mainDetailsToggle.hasAttribute('open')) {
+          // Close if clicking outside the menu drawer content
+          if (!this.menuDrawer.contains(event.target) && 
+              !this.summaryToggle.contains(event.target)) {
+            this.closeMenuDrawer(event, this.summaryToggle);
+          }
+        }
+      });
+      
+      console.log('✅ Custom Header: Drawer initialized successfully');
+    }
+    
+    onSummaryClick(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const isOpen = this.mainDetailsToggle.hasAttribute('open');
+      
+      if (isOpen) {
+        this.closeMenuDrawer(event, this.summaryToggle);
+      } else {
+        this.openMenuDrawer(this.summaryToggle);
+      }
+      
+      // Set viewport height for mobile
+      if (window.matchMedia('(max-width: 990px)').matches) {
+        document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+      }
+    }
+    
+    openMenuDrawer(summaryElement) {
+      if (!this.header) {
+        console.warn('⚠️ Custom Header: Header element not found');
+        return;
+      }
+      
+      try {
+        // Calculate header bottom position safely
+        const headerRect = this.header.getBoundingClientRect();
+        const headerBottom = parseInt(headerRect.bottom - this.borderOffset);
+        
+        document.documentElement.style.setProperty(
+          '--header-bottom-position',
+          `${headerBottom}px`
+        );
+        
+        // Add classes for styling
+        this.header.classList.add('menu-open');
+        
+        // Open the details element
+        this.mainDetailsToggle.setAttribute('open', '');
+        
+        setTimeout(() => {
+          this.mainDetailsToggle.classList.add('menu-opening');
+        }, 10);
+        
+        // Set aria-expanded
+        summaryElement.setAttribute('aria-expanded', 'true');
+        
+        // Prevent body scroll on mobile
+        document.body.classList.add('overflow-hidden-tablet');
+        
+        // Add resize listener
+        window.addEventListener('resize', this.onResize.bind(this));
+        
+        console.log('📱 Custom Header: Menu drawer opened');
+        
+      } catch (error) {
+        console.error('❌ Custom Header: Error opening menu drawer:', error);
+      }
+    }
+    
+    closeMenuDrawer(event, elementToFocus) {
+      if (!elementToFocus) return;
+      
+      try {
+        // Remove classes
+        if (this.header) {
+          this.header.classList.remove('menu-open');
+        }
+        
+        this.mainDetailsToggle.removeAttribute('open');
+        this.mainDetailsToggle.classList.remove('menu-opening');
+        
+        // Reset aria-expanded
+        elementToFocus.setAttribute('aria-expanded', 'false');
+        
+        // Re-enable body scroll
+        document.body.classList.remove('overflow-hidden-tablet');
+        
+        // Remove resize listener
+        window.removeEventListener('resize', this.onResize);
+        
+        // Focus the toggle element
+        elementToFocus.focus();
+        
+        console.log('📱 Custom Header: Menu drawer closed');
+        
+      } catch (error) {
+        console.error('❌ Custom Header: Error closing menu drawer:', error);
+      }
+    }
+    
+    onResize() {
+      if (this.header) {
+        try {
+          const headerRect = this.header.getBoundingClientRect();
+          document.documentElement.style.setProperty(
+            '--header-bottom-position',
+            `${parseInt(headerRect.bottom - this.borderOffset)}px`
+          );
+          document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+        } catch (error) {
+          console.error('❌ Custom Header: Error on resize:', error);
+        }
+      }
+    }
+  }
+  
+  // Initialize the custom drawer
+  try {
+    const customDrawer = new CustomHeaderDrawer(customHeaderDrawer);
+    
+    // Store reference globally for debugging
+    window.customHeaderDrawer = customDrawer;
+    
+  } catch (error) {
+    console.error('❌ Custom Header: Failed to initialize custom drawer:', error);
+  }
+});
+</script>
+
 <script type="application/ld+json">
   {
     "@context": "http://schema.org",
