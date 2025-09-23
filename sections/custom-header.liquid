@@ -51,6 +51,46 @@
     z-index: 10001;
   }
 
+  /* Additional z-index rules to ensure menu displays above content */
+  custom-header-drawer,
+  custom-header-drawer .menu-drawer-container,
+  custom-header-drawer #custom-menu-drawer {
+    z-index: 10001 !important;
+  }
+
+  custom-header-drawer details[open] {
+    z-index: 10002 !important;
+  }
+
+  /* Transform and transition fixes for custom header drawer */
+  custom-header-drawer .menu-drawer {
+    position: absolute;
+    transform: translateX(-100%);
+    visibility: hidden;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    padding: 0;
+    background-color: rgb(var(--color-background));
+    overflow-x: hidden;
+  }
+
+  .js custom-header-drawer .menu-drawer {
+    height: calc(100vh - 100%);
+    height: calc(var(--viewport-height, 100vh) - (var(--header-bottom-position, 100%)));
+  }
+
+  .js custom-header-drawer details[open] > .menu-drawer,
+  .js custom-header-drawer details[open] > .menu-drawer__submenu {
+    transition: transform var(--duration-default) ease, visibility var(--duration-default) ease;
+  }
+
+  .js custom-header-drawer details[open].menu-opening > .menu-drawer,
+  custom-header-drawer details[open].menu-opening > .menu-drawer__submenu {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
     .scrolled-past-header .header__heading-logo-wrapper {
       width: 75%;
