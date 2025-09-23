@@ -6,7 +6,7 @@
   {% render 'custom-header-drawer' %}
 {% endcomment %}
 
-<custom-header-drawer data-breakpoint="{% if section.settings.menu_type_desktop == 'drawer' %}desktop{% else %}tablet{% endif %}">
+<header-drawer data-breakpoint="{% if section.settings.menu_type_desktop == 'drawer' %}desktop{% else %}tablet{% endif %}">
   <details id="Details-custom-menu-drawer-container" class="menu-drawer-container">
     <summary
       class="header__icon header__icon--menu header__icon--summary link focus-inset"
@@ -261,114 +261,5 @@
       </div>
     </div>
   </details>
-</custom-header-drawer>
+</header-drawer>
 
-<script>
-class CustomHeaderDrawer extends HTMLElement {
-  constructor() {
-    super();
-    this.drawer = this.querySelector('#Details-custom-menu-drawer-container');
-    this.summaryElements = this.querySelectorAll('summary');
-    this.drawerContent = this.querySelector('#custom-menu-drawer');
-    
-    this.drawer && this.drawer.addEventListener('keyup', this.onKeyUp.bind(this));
-    this.focusableElements = [this.drawer];
-    this.drawerIsOpen = false;
-    
-    this.summaryElements.forEach(summary => {
-      summary.setAttribute('role', 'button');
-      summary.setAttribute('aria-expanded', 'false');
-      summary.addEventListener('click', this.onSummaryClick.bind(this));
-      summary.addEventListener('keyup', this.onKeyUp.bind(this));
-    });
-  }
-
-  onKeyUp(event) {
-    if(event.code.toUpperCase() !== 'ESCAPE') return;
-
-    const openDetailsElement = event.target.closest('details[open]');
-    if(!openDetailsElement) return;
-
-    openDetailsElement === this.drawer ? this.closeMenuDrawer(event, this.summaryElements[0]) : openDetailsElement.removeAttribute('open');
-  }
-
-  onSummaryClick(event) {
-    const summaryElement = event.currentTarget;
-    const detailsElement = summaryElement.parentNode;
-    const parentMenuElement = detailsElement.closest('.has-submenu');
-    const isOpen = detailsElement.hasAttribute('open');
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    function addTrapFocus() {
-      trapFocus(summaryElement.nextElementSibling, detailsElement.querySelector('button'));
-      summaryElement.nextElementSibling.removeEventListener('transitionend', addTrapFocus);
-    }
-
-    if (detailsElement === this.drawer) {
-      if (isOpen) event.preventDefault();
-      isOpen ? this.closeMenuDrawer(event, summaryElement) : this.openMenuDrawer(summaryElement);
-    } else {
-      setTimeout(() => {
-        detailsElement.classList.add('menu-opening');
-        summaryElement.setAttribute('aria-expanded', true);
-        parentMenuElement && parentMenuElement.classList.add('submenu-open');
-        !reducedMotion || reducedMotion.matches
-          ? addTrapFocus()
-          : summaryElement.nextElementSibling.addEventListener('transitionend', addTrapFocus);
-      }, 100);
-    }
-  }
-
-  openMenuDrawer(summaryElement) {
-    setTimeout(() => {
-      this.drawer.classList.add('menu-opening');
-    });
-    summaryElement.setAttribute('aria-expanded', true);
-    trapFocus(this.drawer, summaryElement);
-    document.body.classList.add(`overflow-hidden-${this.dataset.breakpoint}`);
-    this.drawerIsOpen = true;
-  }
-
-  closeMenuDrawer(event, elementToFocus = false) {
-    if(!elementToFocus) return;
-    
-    this.drawer.classList.remove('menu-opening');
-    this.drawer.querySelectorAll('details').forEach(submenu => {
-      submenu.removeAttribute('open');
-      submenu.classList.remove('menu-opening');
-    });
-    this.drawer.querySelectorAll('.submenu-open').forEach(submenu => {
-      submenu.classList.remove('submenu-open');
-    });
-    document.body.classList.remove(`overflow-hidden-${this.dataset.breakpoint}`);
-    removeTrapFocus(elementToFocus);
-    this.closeAnimation(this.drawer);
-    this.drawerIsOpen = false;
-  }
-
-  closeAnimation(detailsElement) {
-    let animationStart;
-
-    const handleAnimation = (time) => {
-      if (animationStart === undefined) {
-        animationStart = time;
-      }
-
-      const elapsedTime = time - animationStart;
-
-      if (elapsedTime < 400) {
-        window.requestAnimationFrame(handleAnimation);
-      } else {
-        detailsElement.removeAttribute('open');
-        if (detailsElement.closest('details[open]')) {
-          trapFocus(detailsElement.closest('details[open]'), detailsElement.querySelector('summary'));
-        }
-      }
-    }
-
-    window.requestAnimationFrame(handleAnimation);
-  }
-}
-
-customElements.define('custom-header-drawer', CustomHeaderDrawer);
-</script>

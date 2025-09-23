@@ -18,77 +18,9 @@
 {%- endif -%}
 
 <style>
-  custom-header-drawer {
+  header-drawer {
     justify-self: start;
     margin-left: -1.2rem;
-  }
-
-  /* Custom header drawer z-index styles */
-  .js custom-header-drawer > details > summary::before,
-  .js custom-header-drawer > details[open]:not(.menu-opening) > summary::before {
-    content: '';
-    position: absolute;
-    cursor: default;
-    width: 100%;
-    height: calc(100vh - 100%);
-    height: calc(var(--viewport-height, 100vh) - (var(--header-bottom-position, 100%)));
-    top: 100%;
-    left: 0;
-    background: rgba(var(--color-foreground), 0.5);
-    opacity: 0;
-    visibility: hidden;
-    z-index: 10002;
-    transition: opacity 0s, visibility 0s;
-  }
-
-  custom-header-drawer > details[open] > summary::before {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity var(--duration-default) ease, visibility var(--duration-default) ease;
-  }
-
-  custom-header-drawer .menu-drawer {
-    z-index: 10001;
-  }
-
-  /* Additional z-index rules to ensure menu displays above content */
-  custom-header-drawer,
-  custom-header-drawer .menu-drawer-container,
-  custom-header-drawer #custom-menu-drawer {
-    z-index: 10001 !important;
-  }
-
-  custom-header-drawer details[open] {
-    z-index: 10002 !important;
-  }
-
-  /* Transform and transition fixes for custom header drawer */
-  custom-header-drawer .menu-drawer {
-    position: absolute;
-    transform: translateX(-100%);
-    visibility: hidden;
-    left: 0;
-    top: 100%;
-    width: 100%;
-    padding: 0;
-    background-color: rgb(var(--color-background));
-    overflow-x: hidden;
-  }
-
-  .js custom-header-drawer .menu-drawer {
-    height: calc(100vh - 100%);
-    height: calc(var(--viewport-height, 100vh) - (var(--header-bottom-position, 100%)));
-  }
-
-  .js custom-header-drawer details[open] > .menu-drawer,
-  .js custom-header-drawer details[open] > .menu-drawer__submenu {
-    transition: transform var(--duration-default) ease, visibility var(--duration-default) ease;
-  }
-
-  .js custom-header-drawer details[open].menu-opening > .menu-drawer,
-  custom-header-drawer details[open].menu-opening > .menu-drawer__submenu {
-    transform: translateX(0);
-    visibility: visible;
   }
 
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
@@ -99,7 +31,7 @@
 
   {%- if section.settings.menu_type_desktop != "drawer" -%}
     @media screen and (min-width: 990px) {
-      custom-header-drawer {
+      header-drawer {
         display: none;
       }
     }
