@@ -51,28 +51,49 @@
     margin-top: auto;
   }
 
+  /* Fix header-drawer positioning to be within header-wrapper */
+  .header-wrapper {
+    position: relative; /* Make it the positioning context */
+  }
+
+  /* Position header-drawer properly */
+  .header-wrapper header-drawer {
+    position: static; /* Reset positioning to flow naturally */
+  }
+
   /* Fix z-index stacking for custom header drawer */
   .menu-drawer-container {
-    position: relative;
     z-index: 10003; /* Ensure drawer container is above page content */
   }
 
   #custom-menu-drawer {
-    z-index: 10001 !important; /* Match the default drawer z-index */
+    position: absolute !important; /* Use absolute positioning like default */
     left: 0 !important; /* Align to left edge */
     margin-left: 0 !important; /* Remove any margin offset */
-    top: 100% !important; /* Position directly below header */
+    width: 100% !important; /* Full width */
+    top: 100% !important; /* Position below header */
+    z-index: 10001 !important; /* Match the default drawer z-index */
+    transform: translateX(-100%); /* Start hidden off-screen */
+    visibility: hidden;
+    transition: transform var(--duration-default) ease, visibility var(--duration-default) ease;
   }
 
-  /* Fix drawer positioning to align perfectly */
-  header-drawer {
-    margin-left: 0 !important; /* Remove the default -1.2rem offset */
+  /* Show drawer when open */
+  .header-wrapper header-drawer details[open].menu-opening #custom-menu-drawer {
+    transform: translateX(0);
+    visibility: visible;
   }
 
-  /* Ensure menu drawer container has no offset */
-  .menu-drawer-container {
-    margin-left: 0 !important;
-    left: 0 !important;
+  /* Ensure drawer calculates height properly */
+  .js #custom-menu-drawer {
+    height: calc(100vh - var(--header-bottom-position, 100%));
+    overflow-x: hidden;
+  }
+
+  @media screen and (max-width: 749px) {
+    #custom-menu-drawer {
+      width: 100% !important;
+    }
   }
 
   /* Fix the drawer wrapper positioning */
@@ -80,9 +101,38 @@
     margin-left: 0 !important;
   }
 
-  header-drawer > details > summary::before,
-  header-drawer > details[open]:not(.menu-opening) > summary::before {
-    z-index: 10002 !important; /* Overlay z-index */
+  /* Semi-transparent overlay background */
+  .js header-drawer > details > summary::before,
+  .js header-drawer > details[open]:not(.menu-opening) > summary::before {
+    content: '';
+    position: fixed;
+    cursor: default;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background: rgba(var(--color-foreground), 0.5); /* Semi-transparent overlay using theme color */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10000;
+    transition: opacity 0s, visibility 0s;
+  }
+
+  header-drawer > details[open] > summary::before {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity var(--duration-default) ease, visibility var(--duration-default) ease;
+  }
+
+  /* Ensure the drawer appears above the overlay */
+  header-drawer > details[open] > .menu-drawer {
+    z-index: 10001;
+  }
+
+  @media screen and (min-width: 750px) {
+    #custom-menu-drawer {
+      max-width: 40rem;
+    }
   }
 
   /* Ensure sticky header doesn't interfere with drawer */
