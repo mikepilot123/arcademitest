@@ -5,12 +5,12 @@
 .js menu-drawer > details > summary::before,
 .js menu-drawer > details[open]:not(.menu-opening) > summary::before {
   content: '';
-  position: absolute;
+  position: fixed;
   cursor: default;
-  width: 100%;
-  height: calc(100vh - 100%);
-  height: calc(var(--viewport-height, 100vh) - (var(--header-bottom-position, 100%)));
-  top: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
+  top: 0;
   left: 0;
   background: rgba(var(--color-foreground), 0.5);
   opacity: 0;
@@ -26,16 +26,20 @@ menu-drawer > details[open] > summary::before {
 }
 
 .menu-drawer {
-  position: absolute;
+  position: fixed;
   transform: translateX(-100%);
   visibility: hidden;
   z-index: 10001;
   left: 0;
-  top: 100%;
+  top: 0;
   width: 100%;
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
   padding: 0;
+  padding-top: var(--header-bottom-position, 100px); /* Account for header height */
   background-color: rgb(var(--color-background));
   overflow-x: hidden;
+  overflow-y: auto;
   filter: drop-shadow(
     var(--drawer-shadow-horizontal-offset) var(--drawer-shadow-vertical-offset) var(--drawer-shadow-blur-radius)
       rgba(var(--color-shadow), var(--drawer-shadow-opacity))
@@ -43,8 +47,9 @@ menu-drawer > details[open] > summary::before {
 }
 
 .js .menu-drawer {
-  height: calc(100vh - 100%);
-  height: calc(var(--viewport-height, 100vh) - (var(--header-bottom-position, 100%)));
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
+  padding-top: var(--header-bottom-position, 100px);
 }
 
 .js details[open] > .menu-drawer,
@@ -65,6 +70,7 @@ details[open].menu-opening > .menu-drawer__submenu {
 @media screen and (min-width: 750px) {
   .menu-drawer {
     width: 40rem;
+    max-width: 100vw;
     border-width: 0 var(--drawer-border-width) 0 0;
     border-style: solid;
     border-color: rgba(var(--color-foreground), var(--drawer-border-opacity));
