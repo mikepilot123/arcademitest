@@ -87,18 +87,18 @@
   .section-custom-header {
     position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
     margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
-    z-index: 100 !important; /* Lower z-index to allow cart drawer to appear above */
+    z-index: 500 !important; /* Lower z-index to allow cart drawer to appear above */
   }
 
   /* Custom header wrapper with moderate z-index */
   .section-custom-header .header-wrapper {
-    z-index: 100 !important;
+    z-index: 500 !important;
     position: relative;
   }
 
   /* Custom header specific z-index fixes */
   .section-custom-header .header {
-    z-index: 100 !important;
+    z-index: 500 !important;
     position: relative;
   }
 
@@ -107,7 +107,25 @@
   .section-custom-header .mega-menu,
   .section-custom-header .header-dropdown-menu,
   .section-custom-header .dropdown-menu {
-    z-index: 200 !important;
+    z-index: 600 !important;
+  }
+
+  /* Mobile menu drawer - highest priority for navigation */
+  .section-custom-header .menu-drawer,
+  .section-custom-header .menu-drawer-container,
+  .section-custom-header header-drawer {
+    z-index: 1001 !important;
+  }
+
+  /* Mobile menu overlay */
+  .section-custom-header .menu-drawer > details > summary::before {
+    z-index: 1002 !important;
+  }
+
+  /* Lower lightbox z-index when custom header is present */
+  .section-custom-header ~ main .lightbox,
+  .section-custom-header ~ * .lightbox {
+    z-index: 300 !important;
   }
 
   /* Cart drawer and notification - highest priority */

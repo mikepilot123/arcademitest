@@ -157,7 +157,16 @@ if (!customElements.get('media-gallery')) {
           .querySelectorAll('button')
           .forEach((element) => element.removeAttribute('aria-current'));
         thumbnail.querySelector('button').setAttribute('aria-current', true);
-        
+
+        // Force sync of media activation with thumbnail state
+        const mediaId = thumbnail.dataset.target;
+        if (mediaId) {
+          const targetMedia = this.elements.viewer ? this.elements.viewer.querySelector(`[data-media-id="${mediaId}"]`) : null;
+          if (targetMedia && !targetMedia.classList.contains('is-active')) {
+            console.log('🔄 Syncing media activation with thumbnail:', mediaId);
+            this.setActiveMedia(mediaId, false);
+          }
+        }        
         // Check if thumbnail slider has the isSlideVisible method and slider property
         if (this.elements.thumbnails.isSlideVisible && this.elements.thumbnails.isSlideVisible(thumbnail, 10)) return;
 
