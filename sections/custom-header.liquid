@@ -23,6 +23,34 @@
     margin-left: -1.2rem;
   }
 
+  /* Ensure custom header drawer utility links are always visible */
+  header-drawer .menu-drawer__utility-links {
+    padding: 2rem 3rem !important;
+    background-color: rgba(var(--color-foreground), 0.03);
+    position: relative;
+  }
+
+  header-drawer .menu-drawer__inner-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header-drawer .menu-drawer__navigation-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header-drawer .menu-drawer__navigation {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  header-drawer .menu-drawer__utility-links {
+    margin-top: auto;
+  }
+
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
     .scrolled-past-header .header__heading-logo-wrapper {
       width: 75%;
