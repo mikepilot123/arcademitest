@@ -189,6 +189,12 @@
     z-index: 10002; /* Above drawer to ensure close button is clickable */
   }
 
+  /* Completely hide/remove the header menu icon overlay */
+  .header__icon--menu[aria-expanded='true']::before {
+    display: none !important;
+    content: none !important;
+  }
+
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
     .scrolled-past-header .header__heading-logo-wrapper {
       width: 75%;
