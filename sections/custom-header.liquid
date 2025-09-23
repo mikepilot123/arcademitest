@@ -484,6 +484,60 @@
 {%- endif -%}
 
 {% javascript %}
+  // Add functionality to close menu drawer when menu items are clicked
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the header drawer element
+    const headerDrawer = document.querySelector('header-drawer');
+    
+    // Wait a bit to ensure all elements are loaded
+    setTimeout(() => {
+      // Get all menu links in the custom drawer
+      const menuLinks = document.querySelectorAll('#custom-menu-drawer .menu-drawer__menu-item');
+      
+      // Add click event to each menu link
+      menuLinks.forEach(link => {
+        // Only add to actual links (not summary elements for submenus)
+        if (link.tagName === 'A' && link.href) {
+          link.addEventListener('click', function(e) {
+            // If it's not an external link or anchor link, close the drawer
+            const currentUrl = new URL(window.location.href);
+            const linkUrl = new URL(link.href);
+            
+            // Close drawer for internal navigation
+            if (linkUrl.hostname === currentUrl.hostname) {
+              const drawerDetails = document.getElementById('Details-custom-menu-drawer-container');
+              const summaryElement = drawerDetails?.querySelector('summary');
+              
+              if (headerDrawer && headerDrawer.closeMenuDrawer) {
+                // Use the component's close method
+                headerDrawer.closeMenuDrawer(e, summaryElement);
+              } else if (drawerDetails) {
+                // Fallback method
+                drawerDetails.removeAttribute('open');
+                drawerDetails.classList.remove('menu-opening');
+                
+                // Update aria-expanded
+                if (summaryElement) {
+                  summaryElement.setAttribute('aria-expanded', 'false');
+                }
+                
+                // Remove body overflow hidden class
+                document.body.classList.remove('overflow-hidden-tablet');
+                document.body.classList.remove('overflow-hidden');
+                
+                // Remove menu-open class from header
+                const header = document.querySelector('.section-header');
+                if (header) {
+                  header.classList.remove('menu-open');
+                }
+              }
+            }
+          });
+        }
+      });
+    }, 100);
+  });
+
   class StickyHeader extends HTMLElement {
     constructor() {
       super();
