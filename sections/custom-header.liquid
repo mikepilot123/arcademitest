@@ -195,6 +195,14 @@
     content: none !important;
   }
 
+  /* Hide search functionality completely */
+  .header__search,
+  details-modal[id="Search-In-Modal"],
+  details-modal[id="Search-In-Modal-1"],
+  .header__icon--search {
+    display: none !important;
+  }
+
   {%- if section.settings.sticky_header_type == 'reduce-logo-size' -%}
     .scrolled-past-header .header__heading-logo-wrapper {
       width: 75%;
@@ -326,7 +334,9 @@
       endif
 
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank
-        render 'header-search', input_id: 'Search-In-Modal-1'
+        comment
+          Search removed - render 'header-search', input_id: 'Search-In-Modal-1'
+        endcomment
       endif
     -%}
 
@@ -424,7 +434,9 @@
           </localization-form>
         {%- endif -%}
       </div>
-      {%- render 'header-search', input_id: 'Search-In-Modal' -%}
+      {%- comment -%}
+        Search removed - render 'header-search', input_id: 'Search-In-Modal'
+      {%- endcomment -%}
       {%- if shop.customer_accounts_enabled -%}
         <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset{% if section.settings.menu != blank %} small-hide{% endif %}">
           {%- if section.settings.enable_customer_avatar -%}
