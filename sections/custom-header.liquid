@@ -1050,6 +1050,482 @@ document.addEventListener('DOMContentLoaded', function() {
     console.error('❌ Custom Header: Failed to initialize custom drawer:', error);
   }
 });
+
+// Z-INDEX DEBUGGING SUITE
+window.debugMenuDrawer = {
+  
+  // Main debugging function
+  analyzeZIndexIssues() {
+    console.log('🔍 MENU DRAWER Z-INDEX DEBUGGING SUITE');
+    console.log('=====================================');
+    
+    this.analyzeMenuDrawerElements();
+    this.analyzeProductPageElements();
+    this.analyzeStackingContexts();
+    this.analyzeComputedStyles();
+    this.suggestFixes();
+  },
+  
+  // Analyze menu drawer elements
+  analyzeMenuDrawerElements() {
+    console.log('\n📱 MENU DRAWER ELEMENTS ANALYSIS:');
+    console.log('--------------------------------');
+    
+    const elements = {
+      'Menu Button': '.header__icon--menu',
+      'Menu Container': '#Details-menu-drawer-container',
+      'Menu Drawer': '#menu-drawer',
+      'Menu Overlay': '.header__icon--menu[aria-expanded="true"]::before',
+      'Header Drawer': 'header-drawer',
+      'Custom Header': '.section-custom-header'
+    };
+    
+    Object.entries(elements).forEach(([name, selector]) => {
+      const element = document.querySelector(selector);
+      if (element) {
+        const computed = window.getComputedStyle(element);
+        console.log(`${name}:`, {
+          element: element,
+          zIndex: computed.zIndex,
+          position: computed.position,
+          transform: computed.transform,
+          isolation: computed.isolation,
+          opacity: computed.opacity,
+          visibility: computed.visibility,
+          display: computed.display
+        });
+      } else {
+        console.warn(`❌ ${name} not found with selector: ${selector}`);
+      }
+    });
+  },
+  
+  // Analyze product page elements that might interfere
+  analyzeProductPageElements() {
+    console.log('\n🖼️ PRODUCT PAGE ELEMENTS ANALYSIS:');
+    console.log('----------------------------------');
+    
+    const productSelectors = [
+      '.product-media-container',
+      '.product-media-container.media-type-image.media-fit-contain.global-media-settings.gradient',
+      '.global-media-settings',
+      '.media-gallery',
+      '.product__media-list',
+      '.custom-product-images',
+      '.product__media-item',
+      '.product__modal-opener'
+    ];
+    
+    productSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      if (elements.length > 0) {
+        console.log(`${selector} (${elements.length} found):`);
+        elements.forEach((element, index) => {
+          const computed = window.getComputedStyle(element);
+          console.log(`  [${index}]:`, {
+            element: element,
+            zIndex: computed.zIndex,
+            position: computed.position,
+            transform: computed.transform,
+            isolation: computed.isolation,
+            opacity: computed.opacity,
+            filter: computed.filter,
+            willChange: computed.willChange,
+            containment: computed.contain || 'none'
+          });
+        });
+      }
+    });
+  },
+  
+  // Analyze stacking contexts
+  analyzeStackingContexts() {
+    console.log('\n📚 STACKING CONTEXT ANALYSIS:');
+    console.log('-----------------------------');
+    
+    const getAllElements = () => document.querySelectorAll('*');
+    const stackingContextElements = [];
+    
+    getAllElements().forEach(element => {
+      const computed = window.getComputedStyle(element);
+      
+      // Check for stacking context creating properties
+      const createsStackingContext = 
+        computed.position === 'fixed' ||
+        computed.position === 'sticky' ||
+        (computed.position !== 'static' && computed.zIndex !== 'auto') ||
+        computed.opacity !== '1' ||
+        computed.transform !== 'none' ||
+        computed.filter !== 'none' ||
+        computed.isolation === 'isolate' ||
+        computed.mixBlendMode !== 'normal' ||
+        computed.clipPath !== 'none' ||
+        computed.mask !== 'none' ||
+        computed.maskImage !== 'none' ||
+        computed.contain === 'layout' ||
+        computed.contain === 'paint' ||
+        computed.willChange === 'transform' ||
+        computed.willChange === 'opacity';
+        
+      if (createsStackingContext) {
+        stackingContextElements.push({
+          element: element,
+          tagName: element.tagName,
+          className: element.className,
+          id: element.id,
+          zIndex: computed.zIndex,
+          position: computed.position,
+          reason: this.getStackingContextReason(computed)
+        });
+      }
+    });
+    
+    // Sort by z-index (handling 'auto' values)
+    stackingContextElements.sort((a, b) => {
+      const aIndex = a.zIndex === 'auto' ? 0 : parseInt(a.zIndex);
+      const bIndex = b.zIndex === 'auto' ? 0 : parseInt(b.zIndex);
+      return bIndex - aIndex;
+    });
+    
+    console.log('Elements creating stacking contexts (sorted by z-index):');
+    stackingContextElements.forEach((item, index) => {
+      console.log(`${index + 1}.`, {
+        element: `<${item.tagName.toLowerCase()}${item.id ? ' id="' + item.id + '"' : ''}${item.className ? ' class="' + item.className + '"' : ''}>`,
+        zIndex: item.zIndex,
+        position: item.position,
+        reason: item.reason,
+        element: item.element
+      });
+    });
+  },
+  
+  // Get reason for stacking context creation
+  getStackingContextReason(computed) {
+    const reasons = [];
+    
+    if (computed.position === 'fixed') reasons.push('position: fixed');
+    if (computed.position === 'sticky') reasons.push('position: sticky');
+    if (computed.position !== 'static' && computed.zIndex !== 'auto') reasons.push(`position: ${computed.position} + z-index: ${computed.zIndex}`);
+    if (computed.opacity !== '1') reasons.push(`opacity: ${computed.opacity}`);
+    if (computed.transform !== 'none') reasons.push('transform');
+    if (computed.filter !== 'none') reasons.push('filter');
+    if (computed.isolation === 'isolate') reasons.push('isolation: isolate');
+    if (computed.mixBlendMode !== 'normal') reasons.push('mix-blend-mode');
+    if (computed.clipPath !== 'none') reasons.push('clip-path');
+    if (computed.mask !== 'none') reasons.push('mask');
+    if (computed.contain === 'layout' || computed.contain === 'paint') reasons.push(`contain: ${computed.contain}`);
+    if (computed.willChange === 'transform' || computed.willChange === 'opacity') reasons.push(`will-change: ${computed.willChange}`);
+    
+    return reasons.join(', ');
+  },
+  
+  // Analyze computed styles specifically
+  analyzeComputedStyles() {
+    console.log('\n🎨 COMPUTED STYLES ANALYSIS:');
+    console.log('---------------------------');
+    
+    const menuDrawer = document.querySelector('#menu-drawer');
+    const menuContainer = document.querySelector('#Details-menu-drawer-container');
+    const productContainer = document.querySelector('.product-media-container');
+    
+    if (menuDrawer && productContainer) {
+      const menuStyles = window.getComputedStyle(menuDrawer);
+      const productStyles = window.getComputedStyle(productContainer);
+      
+      console.log('Menu Drawer vs Product Container:', {
+        menuDrawer: {
+          zIndex: menuStyles.zIndex,
+          position: menuStyles.position,
+          top: menuStyles.top,
+          left: menuStyles.left,
+          transform: menuStyles.transform,
+          visibility: menuStyles.visibility,
+          display: menuStyles.display
+        },
+        productContainer: {
+          zIndex: productStyles.zIndex,
+          position: productStyles.position,
+          top: productStyles.top,
+          left: productStyles.left,
+          transform: productStyles.transform,
+          isolation: productStyles.isolation
+        }
+      });
+    }
+    
+    // Check if menu is actually open
+    const menuButton = document.querySelector('.header__icon--menu');
+    if (menuButton) {
+      console.log('Menu Button State:', {
+        ariaExpanded: menuButton.getAttribute('aria-expanded'),
+        isOpen: menuContainer?.hasAttribute('open'),
+        containerClasses: menuContainer?.className,
+        drawerClasses: menuDrawer?.className
+      });
+    }
+  },
+  
+  // Suggest fixes based on analysis
+  suggestFixes() {
+    console.log('\n🔧 SUGGESTED FIXES:');
+    console.log('-------------------');
+    
+    const menuDrawer = document.querySelector('#menu-drawer');
+    const productContainers = document.querySelectorAll('.product-media-container');
+    
+    if (menuDrawer && productContainers.length > 0) {
+      const menuZIndex = parseInt(window.getComputedStyle(menuDrawer).zIndex) || 0;
+      let maxProductZIndex = 0;
+      
+      productContainers.forEach(container => {
+        const zIndex = parseInt(window.getComputedStyle(container).zIndex) || 0;
+        maxProductZIndex = Math.max(maxProductZIndex, zIndex);
+      });
+      
+      console.log('Current State:', {
+        menuDrawerZIndex: menuZIndex,
+        maxProductZIndex: maxProductZIndex,
+        difference: menuZIndex - maxProductZIndex
+      });
+      
+      if (menuZIndex <= maxProductZIndex) {
+        console.log('🚨 ISSUE FOUND: Menu drawer z-index is not higher than product containers!');
+        console.log(`Recommended: Set menu drawer z-index to at least ${maxProductZIndex + 1000}`);
+      }
+      
+      // Test fix
+      this.testFix();
+    }
+  },
+  
+  // Test a fix by temporarily modifying styles
+  testFix() {
+    console.log('\n🧪 TESTING TEMPORARY FIX:');
+    console.log('-------------------------');
+    
+    const menuDrawer = document.querySelector('#menu-drawer');
+    const menuContainer = document.querySelector('#Details-menu-drawer-container');
+    
+    if (menuDrawer && menuContainer) {
+      // Store original styles
+      const originalMenuStyle = menuDrawer.style.zIndex;
+      const originalContainerStyle = menuContainer.style.zIndex;
+      
+      // Apply test fix
+      menuDrawer.style.zIndex = '99999';
+      menuContainer.style.zIndex = '99999';
+      
+      console.log('Applied temporary fix with z-index: 99999');
+      console.log('Check if menu now appears above product images');
+      console.log('To revert, run: window.debugMenuDrawer.revertTestFix()');
+      
+      // Store original styles for reverting
+      this.originalStyles = {
+        menuDrawer: originalMenuStyle,
+        menuContainer: originalContainerStyle
+      };
+    }
+  },
+  
+  // Revert test fix
+  revertTestFix() {
+    console.log('🔄 Reverting temporary fix...');
+    
+    const menuDrawer = document.querySelector('#menu-drawer');
+    const menuContainer = document.querySelector('#Details-menu-drawer-container');
+    
+    if (menuDrawer && menuContainer && this.originalStyles) {
+      menuDrawer.style.zIndex = this.originalStyles.menuDrawer;
+      menuContainer.style.zIndex = this.originalStyles.menuContainer;
+      console.log('✅ Temporary fix reverted');
+    }
+  },
+  
+  // Monitor z-index changes
+  monitorZIndexChanges() {
+    console.log('🔍 Starting z-index monitoring...');
+    
+    const menuDrawer = document.querySelector('#menu-drawer');
+    if (menuDrawer) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && 
+              (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+            const computed = window.getComputedStyle(menuDrawer);
+            console.log('📊 Menu drawer style changed:', {
+              zIndex: computed.zIndex,
+              position: computed.position,
+              visibility: computed.visibility,
+              transform: computed.transform
+            });
+          }
+        });
+      });
+      
+      observer.observe(menuDrawer, {
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      });
+      
+      console.log('✅ Monitoring active. Changes will be logged to console.');
+      this.zIndexObserver = observer;
+    }
+  },
+  
+  // Stop monitoring
+  stopMonitoring() {
+    if (this.zIndexObserver) {
+      this.zIndexObserver.disconnect();
+      console.log('⏹️ Z-index monitoring stopped');
+    }
+  }
+};
+
+// Additional debugging for ::before pseudo-element
+window.debugMenuDrawer.analyzePseudoElements = function() {
+  console.log('\n🎭 PSEUDO-ELEMENT ANALYSIS:');
+  console.log('---------------------------');
+  
+  const menuButton = document.querySelector('.header__icon--menu');
+  if (menuButton) {
+    // Check aria-expanded state
+    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+    console.log('Menu Button Pseudo-element State:', {
+      ariaExpanded: isExpanded,
+      selector: isExpanded ? '.header__icon--menu[aria-expanded="true"]::before' : '.header__icon--menu[aria-expanded="false"]::before'
+    });
+    
+    // Try to detect pseudo-element properties through computed styles
+    const beforeStyles = window.getComputedStyle(menuButton, '::before');
+    console.log('::before pseudo-element computed styles:', {
+      content: beforeStyles.content,
+      position: beforeStyles.position,
+      zIndex: beforeStyles.zIndex,
+      background: beforeStyles.background,
+      width: beforeStyles.width,
+      height: beforeStyles.height,
+      top: beforeStyles.top,
+      left: beforeStyles.left,
+      opacity: beforeStyles.opacity,
+      visibility: beforeStyles.visibility,
+      display: beforeStyles.display
+    });
+    
+    // Check if CSS rules exist for this pseudo-element
+    this.checkCSSRulesForPseudoElement();
+  }
+};
+
+// Check CSS rules for pseudo-elements
+window.debugMenuDrawer.checkCSSRulesForPseudoElement = function() {
+  console.log('\n📜 CSS RULES FOR PSEUDO-ELEMENTS:');
+  console.log('----------------------------------');
+  
+  const rules = [];
+  
+  // Check all stylesheets
+  Array.from(document.styleSheets).forEach((styleSheet, sheetIndex) => {
+    try {
+      Array.from(styleSheet.cssRules || []).forEach((rule, ruleIndex) => {
+        if (rule.selectorText && rule.selectorText.includes('::before')) {
+          // Check for menu-related pseudo-element rules
+          if (rule.selectorText.includes('header__icon--menu') || 
+              rule.selectorText.includes('menu-drawer') ||
+              rule.selectorText.includes('summary')) {
+            rules.push({
+              selector: rule.selectorText,
+              cssText: rule.cssText,
+              styleSheet: sheetIndex,
+              ruleIndex: ruleIndex
+            });
+          }
+        }
+      });
+    } catch (e) {
+      console.warn(`Cannot access stylesheet ${sheetIndex}:`, e);
+    }
+  });
+  
+  if (rules.length > 0) {
+    console.log('Found pseudo-element rules:', rules);
+  } else {
+    console.log('No relevant pseudo-element rules found');
+  }
+};
+
+// Enhanced menu state debugging
+window.debugMenuDrawer.analyzeMenuState = function() {
+  console.log('\n🎛️ MENU STATE ANALYSIS:');
+  console.log('----------------------');
+  
+  const menuButton = document.querySelector('.header__icon--menu');
+  const menuContainer = document.querySelector('#Details-menu-drawer-container');
+  const menuDrawer = document.querySelector('#menu-drawer');
+  
+  if (menuButton && menuContainer && menuDrawer) {
+    console.log('Menu Elements State:', {
+      button: {
+        element: menuButton,
+        ariaExpanded: menuButton.getAttribute('aria-expanded'),
+        classes: menuButton.className,
+        visibility: window.getComputedStyle(menuButton).visibility,
+        display: window.getComputedStyle(menuButton).display
+      },
+      container: {
+        element: menuContainer,
+        hasOpenAttribute: menuContainer.hasAttribute('open'),
+        classes: menuContainer.className,
+        visibility: window.getComputedStyle(menuContainer).visibility,
+        display: window.getComputedStyle(menuContainer).display
+      },
+      drawer: {
+        element: menuDrawer,
+        classes: menuDrawer.className,
+        visibility: window.getComputedStyle(menuDrawer).visibility,
+        display: window.getComputedStyle(menuDrawer).display,
+        transform: window.getComputedStyle(menuDrawer).transform
+      }
+    });
+    
+    // Test opening the menu if it's closed
+    if (!menuContainer.hasAttribute('open')) {
+      console.log('\n🔓 Testing menu opening...');
+      console.log('Click the hamburger menu and run this again to see the changes');
+    }
+  }
+};
+
+// Add click event listener for real-time debugging
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.header__icon--menu')) {
+    console.log('\n🖱️ MENU CLICK DETECTED:');
+    console.log('---------------------');
+    
+    setTimeout(() => {
+      window.debugMenuDrawer.analyzeMenuState();
+      window.debugMenuDrawer.analyzePseudoElements();
+      window.debugMenuDrawer.analyzeComputedStyles();
+    }, 100);
+  }
+});
+
+// Auto-run analysis on product pages
+if (window.location.pathname.includes('/products/')) {
+  console.log('🛍️ Product page detected - Running automatic z-index analysis...');
+  setTimeout(() => {
+    window.debugMenuDrawer.analyzeZIndexIssues();
+    window.debugMenuDrawer.analyzePseudoElements();
+    window.debugMenuDrawer.analyzeMenuState();
+  }, 1000);
+}
+
+console.log('🔧 Debug tools loaded!');
+console.log('📋 Available commands:');
+console.log('  - window.debugMenuDrawer.analyzeZIndexIssues()');
+console.log('  - window.debugMenuDrawer.analyzePseudoElements()');
+console.log('  - window.debugMenuDrawer.analyzeMenuState()');
+console.log('  - window.debugMenuDrawer.testFix()');
+console.log('  - window.debugMenuDrawer.monitorZIndexChanges()');
 </script>
 
 <script type="application/ld+json">
